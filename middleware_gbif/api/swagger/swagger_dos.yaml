@@ -1,0 +1,426 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: "SNIB API"
+host: localhost:8080
+basePath: /snib
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+
+/getGridIds:
+    get:
+      description: Responde los `id` de las celdas del mapa
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    gridid:
+                      type: integer
+
+  /getSpecie:
+    get:
+      description: |
+        Regresa un conjunto especies filtrado por `nom_sp` o algunas si no
+        existe filtro
+      parameters:
+        -
+          name: q
+          in: query
+          description: |
+            Palabra de búsqueda para el nombre de una especie o
+            grupo taxonómico
+          type: string
+        -
+          name: field
+          in: query
+          description: |
+            Nombre del grupo taxónomico en el que se hará la búsqueda
+          type: string
+        -
+          name: parentfield
+          in: query
+          description: | 
+            Orden taxonómico superior al campo `field`. Este parametro se
+            usa cuando se desea obtener el conteo de los distintos taxones
+            en el orden `field`
+        -
+          name: parentvalue
+          in: query
+          description: |
+            Valor del campo `parentfield`.
+        -
+          name: limit
+          in: query
+          description: Número de resultados que quiere que se despliegen
+          type: number
+          default: 20
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    nom_sp:
+                      type: string
+                    spid:
+                      type: integer
+                    reinovalido:
+                      type: string
+                    phylumdivisionvalido:
+                      type: string
+                    clasevalida:
+                      type: string
+                    ordenvalida:
+                      type: string
+                    familiavalida:
+                      type: string
+                    generovalido:
+                      type: string
+                    epitetovalido:
+                      type: string
+          examples:
+            application/json:
+              data:
+                -
+                  nom_sp: Holocentrus rufus
+                  spid: 53196
+                  reinovalido: Animalia
+                  phylumdivisionvalido: Craniata
+                  clasevalida: Actinopterygii
+                  ordenvalido: Beryciformes
+                  familiavalida: Holocentridae
+                  generovalido: Holocentrus
+                  epitetovalido: rufus
+                -
+                  nom_sp: Molossus rufus
+                  spid: 49311
+                  reinovalido: Animalia
+                  phylumdivisionvalido: Craniata
+                  clasevalida: Mammalia
+                  ordenvalido: Chiroptera
+                  familiavalida: Molossidae
+                  generovalido: Molossus
+                  epitetovalido: rufus
+    post:
+      description: |
+        Regresa un conjunto especies o taxones filtrado por `q` o algunas si no
+        existe filtro. Para buscar sobre un nivel taxonómico debe de existir el 
+        campo `field`
+      parameters:
+        -
+          name: payload
+          in: body
+          schema:
+            type: object
+            properties:
+              q:
+                type: string
+              field:
+                type: string
+              limit:
+                type: number
+                default: 20
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    nom_sp:
+                      type: string
+                    spid:
+                      type: integer
+                    reinovalido:
+                      type: string
+                    phylumdivisionvalido:
+                      type: string
+                    clasevalida:
+                      type: string
+                    ordenvalida:
+                      type: string
+                    familiavalida:
+                      type: string
+                    generovalido:
+                      type: string
+                    epitetovalido:
+                      type: string
+          examples:
+            application/json:
+              data:
+                -
+                  nom_sp: Holocentrus rufus
+                  spid: 53196
+                  reinovalido: Animalia
+                  phylumdivisionvalido: Craniata
+                  clasevalida: Actinopterygii
+                  ordenvalido: Beryciformes
+                  familiavalida: Holocentridae
+                  generovalido: Holocentrus
+                  epitetovalido: rufus
+                -
+                  nom_sp: Molossus rufus
+                  spid: 49311
+                  reinovalido: Animalia
+                  phylumdivisionvalido: Craniata
+                  clasevalida: Mammalia
+                  ordenvalido: Chiroptera
+                  familiavalida: Molossidae
+                  generovalido: Molossus
+                  epitetovalido: rufus
+  /getSpecie/{id}:
+    get:
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Lorem Ipsum Dolot ...
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+  /getInteractionCount:
+    get:
+      description: |
+        Dado un conjunto de especies se devuelven las celdas donde están
+        presentes, al menos una de ellas, con el conteo de cuantas de ellas
+        están presentes en dicha celda. Además se devuelve un arreglo con
+        las especies presentes en dicha celda.
+      parameters:
+        -
+          name: cat_spids
+          in: query
+          required: true
+          type: array
+          items:
+            type: integer
+          collectionFormat: multi
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    gridid:
+                      type: integer
+                    spids:
+                      type: array
+                      items:
+                        type: integer
+                    count:
+                      type: integer
+    post:
+      description: |
+        Dado un conjunto de especies se devuelven las celdas donde están
+        presentes, al menos una de ellas, con el conteo de cuantas de ellas
+        están presentes en dicha celda. Además se devuelve un arreglo con
+        las especies presentes en dicha celda.
+      parameters:
+        -
+          name: cat_spids
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              type: integer
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    gridid:
+                      type: integer
+                    spids:
+                      type: array
+                      items:
+                        type: integer
+                    count:
+                      type: integer
+  /getCountByGroup:
+    get:
+      description: |
+        Dada una pareja de categorías taxonómicas, padre e hijo, se regresa
+        el conteo de las categorías taxonómicas inferiores al hijo y su
+        nombre.
+      parameters:
+        -
+          name: field
+          in: query
+          type: string
+        -
+          name: parentfield
+          in: query
+          type: string
+        - 
+          name: parentitem
+          in: query
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    spp:
+                      type: number
+    post:
+      description: |
+        Dada una pareja de categorías taxonómicas, padre e hijo, se regresa
+        el conteo de las categorías taxonómicas inferiores al hijo y su
+        nombre.
+      parameters:
+        -
+          name: data
+          in: body
+          schema:
+            type: object
+            properties:
+              field:
+                type: string
+              parentfield:
+                type: string
+              parentitem:
+                type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    spp:
+                      type: number
+          examples:
+            application/json:
+              data:
+                - 
+                  name: Artiodactyla
+                  spp: 17
+                - 
+                  name: Carnivora
+                  spp: 45
+                - 
+                  name: Cetacea
+                  spp: 38
+
+  /getRasterVariable/{type}:
+    get:
+      description: |
+        Devuelve el nombre las capas disponibles para variables climáticas o 
+        topográficas. Dependiendo el parámetro de `type` que se le pida.
+      parameters:
+        -
+          name: type
+          in: path
+          type: string
+          required: true
+          enum: ["clima", "topo"]
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    label:
+                      type: string
+                    layer:
+                      type: string
+                    type:
+                      type: integer
+
+  /getRasterVariable/{type}/{layer}:
+    get:
+      description: |
+        Se obtienen los datos correspondientes a la capa solicitada.
+      parameters:
+        -
+          name: type
+          in: path
+          type: string
+          required: true
+          enum: ["clima", "topo"]
+        - 
+          name: layer
+          in: path
+          type: string
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    tag:
+                      type: string
+                    label:
+                      type: string
+                    layer:
+                      type: string
+                    bid:
+                      type: integer
+                    type:
+                      type: integer

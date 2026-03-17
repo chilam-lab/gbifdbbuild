@@ -1,0 +1,484 @@
+openapi: 3.0.1
+info:
+  title: SPECIES-API
+  description: Endpoints del API SPECIES ver (species.c3.unam.mx)
+  version: "1.0.1"
+servers:
+  - url: 'http://species.conabio.gob.mx'
+paths:
+  /api-db-dev/niche/especie/getVariables:
+    post:
+      summary: Obtiene el valor del taxon especificado, dado el valor de un taxon hijo.
+      description: Taxon especificado, taxon hijo y valor.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parentfield:
+                  type: string
+                field:
+                  type: string
+                footprint_region:
+                  type: integer
+                parentitem:
+                  type: string
+            examples:
+              '0':
+                value: "{\n  \t\"field\":\"phylumdivisionvalido\",\n  \t\"parentfield\":\"especievalidabusqueda\",\n  \t\"parentitem\":\"Lynx rufus\",\n\t\"footprint_region\":1\n}"
+      responses:
+        '200':
+          description: Valores posibles de taxon especificado. 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        ssp:
+                          type: integer
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n\t\"data\": [\r\n\t\t{\r\n\t\t\t\"name\": \"Chordata\",\r\n\t\t\t\"spp\": \"1\"\r\n\t\t}\r\n\t\t\t]\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/especie/getIdFromName:
+    post:
+      summary: Obtiene los spids de especies dados valores de taxones.
+      description: Nombres de las especies.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                species:
+                  type: array
+                  items:
+                    type: string
+            examples:
+              '0':
+                value: "{\n\t\"species\":[\"Lynx rufus\"]\n}"
+              '1':
+                value: "{\n\t\"species\":[\"Lynx rufus\", \"Aedes aegypti\"]\n}"
+      responses:
+        '200':
+          description: Nombres de las especies con su respectivo spid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  species: 
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        species_found:
+                          type: array
+                          items:
+                            type: string
+                        ids:
+                          type: array
+                          items:
+                            type: integer
+                  ok: 
+                    type: boolean
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n\t\"species\": \r\n\t[\r\n  \t\t{\r\n\t\t\t\"species_found\": \r\n\t\t\t[\r\n  \t\t\t\t\"Lynx rufus\"\r\n\t\t\t],\r\n\t\t\t\t\"ids\": \r\n\t\t\t[\r\n  \t\t\t\t27333\r\n\t\t\t]\r\n\t\t}\r\n\t],\r\n\t\"ok\": true\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/especie/getAvailableVariables:
+    post:
+      summary: Obtiene todas las fuentes bioclimaticas de las que se tienen variables integradas.
+      description: Capa climatica y region de interes.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                field:
+                  type: string
+                level:
+                  type: integer
+                footprint_region:
+                  type: integer
+            examples:
+              '0':
+                value: "{\n  \t\"field\":\"bio001\",\n  \t\"level\":0,\n  \t\"footprint_region\":1\n}"
+      responses:
+        '200':
+          description: Las fuentes bioclimaticas con sus ids, nombre, description y los ids de las regiones.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        fuente:
+                          type: string
+                        description:
+                          type: string
+                        footprint_region:
+                          type: array
+                          items:
+                            type: integer
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n  \"ok\": true,\r\n  \"data\": \r\n  [\r\n    {\r\n      \"id\": 1,\r\n      \"fuente\": \"worldclim\",\r\n      \"descripcion\": \"worldclim 30sin v2.0\",\r\n      \"footprint_region\": \r\n      [\r\n        1,\r\n        2,\r\n        3,\r\n        4\r\n      ],\r\n    },\r\n    {\r\n      \"id\": 2,\r\n      \"fuente\": \"climond\",\r\n      \"descripcion\": \"climond 10min 1975 ASCII grid\",\r\n      \"footprint_region\": \r\n      [\r\n        1,\r\n        2,\r\n        3,\r\n        4\r\n      ]\r\n    }\r\n  ]\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/especie/getSpecies:
+    post:
+      summary: Obtiene las ocurrencias registradas en la base de datos de una para una especie.
+      description: Id de la especie, filtros de fecha, fosil, resolucion y region de interes.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sfecha:
+                  type: boolean
+                sfosil:
+                  type: boolean
+                footprint_region:
+                  type: integer
+                id:
+                  type: integer
+                idtime:
+                  type: string
+                grid_res:
+                  type: integer
+            examples:
+              '0':
+                value: "{\n  \t\"id\": 27333,\n\t\"idtime\": \"1549052020331\",\n\t\"sfecha\": true,\n\t\"sfosil\": true,\n\t\"grid_res\": 16,\n\t\"footprint_region\": 1\n}"
+      responses:
+        '200':
+          description: Ocurrencias con coordenadas, id de celda, url de ocurrencia, anho de colecta y numero total de ocurrencias. 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        json_geom:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            coordinates:
+                              type: string
+                            gridid:
+                              type: integer
+                            urlejemplar:
+                              type: string
+                            aniocolecta:
+                              type: integer
+                            occ:
+                              type: integer
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n  \"data\": \r\n  [\r\n    {\r\n      \"json_geom\": \"{\"type\":\"Point\",\"coordinates\":[-100.0494444,25.7863889]}\",\r\n      \"gridid\": 41532,\r\n      \"urlejemplar\": \"http:\/\/www.snib.mx\/snibgeoportal\/Ejemplar.php?id=b6ccc2d8ad749eac074204f6dd93f1fc\",\r\n      \"aniocolecta\": 1967,\r\n      \"occ\": 294\r\n    }\r\n  ]\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/especie/getSubAOI:
+    post:
+      summary: Obtiene las regiones disponibles para hacer analisis.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            examples:
+              '0':
+                value: '{}'
+      responses:
+        '200':
+          description: Ids y nombre de cada region disponible.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties: 
+                        footprint_region: 
+                          type: integer
+                        country:
+                          type: string
+                        fgid: 
+                          type: integer
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n  \"data\": \r\n  [\r\n    {\r\n      \"footprint_region\": \"1\",\r\n      \"country\": \"MEXICO\",\r\n      \"fgid\": 19\r\n    },\r\n    {\r\n      \"footprint_region\": \"2\",\r\n      \"country\": \"UNITED STATES, THE\",\r\n    \"fgid\": 28\r\n    }\r\n  ]\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/especie/getValuesFromToken:
+    post:
+      summary: Obtiene los parametros de configuracion de un analisis guardado anteriormente.
+      description: Token y tipo de analisis.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tipo:
+                  type: string
+                token:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                    "token":"fef646b3d8248ddf191d3e908261cefb",
+                    "tipo":"nicho"
+                  }
+      responses:
+        '200':
+          description: Parametros de configuracion en una cadena. 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        parametros:
+                          type: string
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n  \"data\": \r\n  [\r\n    {\r\n      \"parametros\": \"sp_data={\"reino\":\"Animalia\",\"phylum\":\"Craniata\",\"clase\":\"Mammalia\",\"orden\":\"Chiroptera\",\"familia\":\"Vespertilionidae\",\"genero\":\"Pipistrellus\",\"especie\":\"Pipistrellus subflavus\",\"spid\":27604,\"label\":\"Pipistrellus subflavus\"}&chkVal=true&chkFosil=true&chkFec=true&num_filters=2&tfilters[0]={\"value\":[{\"label\":\"Orden >> Chiroptera\",\"level\":\"5\",\"type\":4}],\"type\":0,\"groupid\":1,\"title\":\"Gpo Bio 1\"}&tfilters[1]={\"value\":[{\"value\":\"root_bioclim\",\"label\":\"Bioclim >> Bioclim\",\"level\":0,\"type\":0}],\"type\":1,\"groupid\":2,\"title\":\"Gpo Abio 2\"}\"\r\n    }\r\n  ]\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/especie/getN:
+    post:
+      summary: Obtiene el numero de celdas con la resolucion y de la region especificada.
+      description: Resolucion y Id de la region de interes.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                footprint_region:
+                  type: integer
+                grid_res:
+                  type: integer
+            examples:
+              '0':
+                value: "{\n  \t\"grid_res\": 64,\n  \t\"footprint_region\":3\n}"
+      responses:
+        '200':
+          description: Numero de celdas.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        n:
+                          type: integer
+                  ok:
+                    boolean
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n  \"data\": \r\n  [\r\n    {\r\n      \"n\": 4278\r\n    }\r\n  ],\r\n  \"ok\": true\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/especie/getAvailableCountriesFootprint:
+    get:
+      description: Obtiene las regiones disponibles para hacer analisis.
+      responses:
+        '200':
+          description: Ids y nombre de cada region disponible.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties: 
+                        footprint_region: 
+                          type: integer
+                        country:
+                          type: string
+                        fgid: 
+                          type: integer
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n  \"data\": \r\n  [\r\n    {\r\n      \"footprint_region\": \"1\",\r\n      \"country\": \"MEXICO\",\r\n      \"fgid\": 19\r\n    },\r\n    {\r\n      \"footprint_region\": \"2\",\r\n      \"country\": \"UNITED STATES, THE\",\r\n    \"fgid\": 28\r\n    }\r\n  ]\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/especie/getGridGeoJson:
+    post:
+      summary: Obtiene el GeoJSON de la malla del area de interes con la resolucion especificada.
+      description: Resolucion y Id del area de interes.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                footprint_region:
+                  type: integer
+                grid_res:
+                  type: integer
+            examples:
+              '0':
+                value: |-
+                  {
+                    "grid_res":64,
+                    "footprint_region":1
+                  }
+      responses:
+        '200':
+          description: GeoJSON con las celdas de la malla.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  crs:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      properties:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                  features:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      geometry:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                          coordinates:
+                            type: array
+                            items:
+                              type: array
+                              items:
+                                type: number
+                      properties:
+                        type: object
+                        properties:
+                          gridid:
+                            type: integer
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n  \"type\": \"FeatureCollection\",\r\n  \"crs\": \r\n  {\r\n    \"type\": \"name\",\r\n    \"properties\": \r\n    {\r\n      \"name\": \"urn:ogc:def:crs:EPSG::4326\"\r\n    }\r\n  },\r\n  \"features\": \r\n  [\r\n    {\r\n      \"type\": \"Feature\",\r\n      \"geometry\": \r\n      {\r\n        \"type\": \"Polygon\",\r\n        \"coordinates\": \r\n        [\r\n          [\r\n            [\r\n              -113.259591021789,\r\n              28.624976589894\r\n            ],\r\n            [\r\n              -113.259591021789,\r\n              29.1284105912999\r\n            ],\r\n            [\r\n              -112.684669239953,\r\n              29.1284105912999\r\n            ],\r\n            [\r\n              -112.684669239953,\r\n              28.624976589894\r\n            ],\r\n            [\r\n              -113.259591021789,\r\n              28.624976589894\r\n            ],\r\n          ],\r\n        ],\r\n      },\r\n      \"properties\": \r\n      {\r\n        \"gridid\": 45530\r\n      }\r\n    }\r\n  }\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/especie/getRasterVariables:
+    get:
+      summary: Obtiene las fuentes climaticas disponibles para analisis.
+      responses:
+        '200':
+          description: Nombres de las fuentes con su Id.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fuente:
+                          type: string
+                        type:
+                          type: integer
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n  \"data\": \r\n  [\r\n    {\r\n      \"fuente\": \"worldclim\",\r\n      \"type\": 1\r\n    },\r\n    {\r\n      \"fuente\": \"climond\",\r\n      \"type\": 2\r\n    },\r\n    {\r\n      \"fuente\": \"SNMB CONABIO\",\r\n      \"type\": 3\r\n    },\r\n    {\r\n      \"fuente\": \"ENVIREM\",\r\n      \"type\": 4\r\n    },\r\n    {\r\n      \"fuente\": \"USGS\",\r\n      \"type\": 5\r\n    }\r\n  ],\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/especie/getAvailableCountriesFootprint:
+    get:
+      description: Auto generated using Swagger Inspector
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'

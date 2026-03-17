@@ -1,0 +1,6095 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: "SNIB API"
+host: localhost:8080
+basePath: /snib
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+
+  /getGeoRelNiche:
+    get:
+      description: |
+        Obtiene epsilon y score basados en especie objetivo y grupo de variables seleccionado
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+
+      responses:
+        "200":
+          description: Retorna un objeto json con el cálculo de epsilon y score para cada relación
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  especievalidabusqueda:
+                    type: string
+                  nij:
+                    type: integer
+                  nj:
+                    type: integer
+                  ni:
+                    type: integer
+                  n:
+                    type: integer
+                  reinovalido:
+                    type: string
+                  phylumdivisionvalido:
+                    type: string
+                  clasevalida:
+                    type: string
+                  ordenvalido:
+                    type: string
+                  familiavalida:
+                    type: string
+                  epsilon:
+                    type: float
+                  score:
+                    type: float
+
+          examples:
+            application/json:
+              data:
+                especievalidabusqueda: Canis latrans
+                nij: 460
+                nj: 2079
+                ni: 1623
+                n: 94544
+                reinovalido: Animalia
+                phylumdivisionvalido: Craniata
+                clasevalida: Mammalia
+                ordenvalido: Carnivora
+                familiavalida: Canidae
+                epsilon: 71.64
+                score: 2.79
+            
+    post:
+      description: |
+        Obtiene epsilon y score basados en especie objetivo y grupo de variables seleccionado
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con el cálculo de epsilon y score para cada relación
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  especievalidabusqueda:
+                    type: string
+                  nij:
+                    type: integer
+                  nj:
+                    type: integer
+                  ni:
+                    type: integer
+                  n:
+                    type: integer
+                  reinovalido:
+                    type: string
+                  phylumdivisionvalido:
+                    type: string
+                  clasevalida:
+                    type: string
+                  ordenvalido:
+                    type: string
+                  familiavalida:
+                    type: string
+                  epsilon:
+                    type: float
+                  score:
+                    type: float
+
+          examples:
+            application/json:
+              data:
+                especievalidabusqueda: Canis latrans
+                nij: 460
+                nj: 2079
+                ni: 1623
+                n: 94544
+                reinovalido: Animalia
+                phylumdivisionvalido: Craniata
+                clasevalida: Mammalia
+                ordenvalido: Carnivora
+                familiavalida: Canidae
+                epsilon: 71.64
+                score: 2.79
+  
+
+
+  /getGeoRelNiche_T:
+    get:
+      description: |
+        Obtiene epsilon y score basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+
+
+      responses:
+        "200":
+          description: Retorna un objeto json con el cálculo de epsilon y score para cada relación
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  especievalidabusqueda:
+                    type: string
+                  nij:
+                    type: integer
+                  nj:
+                    type: integer
+                  ni:
+                    type: integer
+                  n:
+                    type: integer
+                  reinovalido:
+                    type: string
+                  phylumdivisionvalido:
+                    type: string
+                  clasevalida:
+                    type: string
+                  ordenvalido:
+                    type: string
+                  familiavalida:
+                    type: string
+                  epsilon:
+                    type: float
+                  score:
+                    type: float
+
+          examples:
+            application/json:
+              data:
+                especievalidabusqueda: Canis latrans
+                nij: 460
+                nj: 2079
+                ni: 1623
+                n: 94544
+                reinovalido: Animalia
+                phylumdivisionvalido: Craniata
+                clasevalida: Mammalia
+                ordenvalido: Carnivora
+                familiavalida: Canidae
+                epsilon: 71.64
+                score: 2.79
+            
+    post:
+      description: |
+        Obtiene epsilon y score basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con el cálculo de epsilon y score para cada relación
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  especievalidabusqueda:
+                    type: string
+                  nij:
+                    type: integer
+                  nj:
+                    type: integer
+                  ni:
+                    type: integer
+                  n:
+                    type: integer
+                  reinovalido:
+                    type: string
+                  phylumdivisionvalido:
+                    type: string
+                  clasevalida:
+                    type: string
+                  ordenvalido:
+                    type: string
+                  familiavalida:
+                    type: string
+                  epsilon:
+                    type: float
+                  score:
+                    type: float
+
+          examples:
+            application/json:
+              data:
+                especievalidabusqueda: Canis latrans
+                nij: 460
+                nj: 2079
+                ni: 1623
+                n: 94544
+                reinovalido: Animalia
+                phylumdivisionvalido: Craniata
+                clasevalida: Mammalia
+                ordenvalido: Carnivora
+                familiavalida: Canidae
+                epsilon: 71.64
+                score: 2.79
+
+
+
+  /getGeoRelNiche_V:
+    get:
+      description: |
+        Obtiene epsilon y score basados en especie objetivo y grupo de variables seleccionado. Descarta registros que son considerados en el proceso de validación
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+
+
+      responses:
+        "200":
+          description: Retorna un objeto json con el cálculo de epsilon y score para cada relación
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  especievalidabusqueda:
+                    type: string
+                  nij:
+                    type: integer
+                  nj:
+                    type: integer
+                  ni:
+                    type: integer
+                  n:
+                    type: integer
+                  reinovalido:
+                    type: string
+                  phylumdivisionvalido:
+                    type: string
+                  clasevalida:
+                    type: string
+                  ordenvalido:
+                    type: string
+                  familiavalida:
+                    type: string
+                  epsilon:
+                    type: float
+                  score:
+                    type: float
+
+          examples:
+            application/json:
+              data:
+                especievalidabusqueda: Canis latrans
+                nij: 460
+                nj: 2079
+                ni: 1623
+                n: 94544
+                reinovalido: Animalia
+                phylumdivisionvalido: Craniata
+                clasevalida: Mammalia
+                ordenvalido: Carnivora
+                familiavalida: Canidae
+                epsilon: 71.64
+                score: 2.79
+            
+    post:
+      description: |
+        Obtiene epsilon y score basados en especie objetivo y grupo de variables seleccionado. Descarta registros que son considerados en el proceso de validación
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con el cálculo de epsilon y score para cada relación
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  especievalidabusqueda:
+                    type: string
+                  nij:
+                    type: integer
+                  nj:
+                    type: integer
+                  ni:
+                    type: integer
+                  n:
+                    type: integer
+                  reinovalido:
+                    type: string
+                  phylumdivisionvalido:
+                    type: string
+                  clasevalida:
+                    type: string
+                  ordenvalido:
+                    type: string
+                  familiavalida:
+                    type: string
+                  epsilon:
+                    type: float
+                  score:
+                    type: float
+
+          examples:
+            application/json:
+              data:
+                especievalidabusqueda: Canis latrans
+                nij: 460
+                nj: 2079
+                ni: 1623
+                n: 94544
+                reinovalido: Animalia
+                phylumdivisionvalido: Craniata
+                clasevalida: Mammalia
+                ordenvalido: Carnivora
+                familiavalida: Canidae
+                epsilon: 71.64
+                score: 2.79
+
+
+
+  /getGeoRelNiche_VT:
+    get:
+      description: |
+        Obtiene epsilon y score basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo y descarta registros que son considerados en el proceso de validación
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos y descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+
+
+      responses:
+        "200":
+          description: Retorna un objeto json con el cálculo de epsilon y score para cada relación
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  especievalidabusqueda:
+                    type: string
+                  nij:
+                    type: integer
+                  nj:
+                    type: integer
+                  ni:
+                    type: integer
+                  n:
+                    type: integer
+                  reinovalido:
+                    type: string
+                  phylumdivisionvalido:
+                    type: string
+                  clasevalida:
+                    type: string
+                  ordenvalido:
+                    type: string
+                  familiavalida:
+                    type: string
+                  epsilon:
+                    type: float
+                  score:
+                    type: float
+
+          examples:
+            application/json:
+              data:
+                especievalidabusqueda: Canis latrans
+                nij: 460
+                nj: 2079
+                ni: 1623
+                n: 94544
+                reinovalido: Animalia
+                phylumdivisionvalido: Craniata
+                clasevalida: Mammalia
+                ordenvalido: Carnivora
+                familiavalida: Canidae
+                epsilon: 71.64
+                score: 2.79
+            
+    post:
+      description: |
+        Obtiene epsilon y score basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo y descarta registros que son considerados en el proceso de validación
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos y descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con el cálculo de epsilon y score para cada relación
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  especievalidabusqueda:
+                    type: string
+                  nij:
+                    type: integer
+                  nj:
+                    type: integer
+                  ni:
+                    type: integer
+                  n:
+                    type: integer
+                  reinovalido:
+                    type: string
+                  phylumdivisionvalido:
+                    type: string
+                  clasevalida:
+                    type: string
+                  ordenvalido:
+                    type: string
+                  familiavalida:
+                    type: string
+                  epsilon:
+                    type: float
+                  score:
+                    type: float
+
+          examples:
+            application/json:
+              data:
+                especievalidabusqueda: Canis latrans
+                nij: 460
+                nj: 2079
+                ni: 1623
+                n: 94544
+                reinovalido: Animalia
+                phylumdivisionvalido: Craniata
+                clasevalida: Mammalia
+                ordenvalido: Carnivora
+                familiavalida: Canidae
+                epsilon: 71.64
+                score: 2.79
+
+
+
+
+
+  /getFreqNiche:
+    get:
+      description: |
+        Obtiene la frecuencia de epsilon y score por especie, basados en especie objetivo y grupo de variables seleccionado
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+
+
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de epsilon y score por especie
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  bucket:
+                    type: integer
+                  freq_epsilon:
+                    type: string
+                  freq_score:
+                    type: string
+                  max_epsilon:
+                    type: string
+                  max_score:
+                    type: string
+                  min_epsilon:
+                    type: string
+                  min_score:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                bucket: 1
+                freq_epsilon: "394.00"
+                freq_score: "3.00"
+                max_epsilon: "2.77"
+                max_score: "-4.19"
+                min_epsilon: "-0.85"
+                min_score: "-4.99"
+                  
+            
+    post:
+      description: |
+        Obtiene la frecuencia de epsilon y score por especie, basados en especie objetivo y grupo de variables seleccionado
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos y descartadas por el proceso de validación
+          type: array
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de epsilon y score por especie
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  bucket:
+                    type: integer
+                  freq_epsilon:
+                    type: string
+                  freq_score:
+                    type: string
+                  max_epsilon:
+                    type: string
+                  max_score:
+                    type: string
+                  min_epsilon:
+                    type: string
+                  min_score:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                bucket: 1
+                freq_epsilon: "394.00"
+                freq_score: "3.00"
+                max_epsilon: "2.77"
+                max_score: "-4.19"
+                min_epsilon: "-0.85"
+                min_score: "-4.99"
+  
+
+  /getFreqNiche_T:
+    get:
+      description: |
+        Obtiene la frecuencia de epsilon y score por especie, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+
+
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de epsilon y score por especie
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  bucket:
+                    type: integer
+                  freq_epsilon:
+                    type: string
+                  freq_score:
+                    type: string
+                  max_epsilon:
+                    type: string
+                  max_score:
+                    type: string
+                  min_epsilon:
+                    type: string
+                  min_score:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                bucket: 1
+                freq_epsilon: "394.00"
+                freq_score: "3.00"
+                max_epsilon: "2.77"
+                max_score: "-4.19"
+                min_epsilon: "-0.85"
+                min_score: "-4.99"
+                  
+            
+    post:
+      description: |
+        Obtiene la frecuencia de epsilon y score por especie, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos y descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de epsilon y score por especie
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  bucket:
+                    type: integer
+                  freq_epsilon:
+                    type: string
+                  freq_score:
+                    type: string
+                  max_epsilon:
+                    type: string
+                  max_score:
+                    type: string
+                  min_epsilon:
+                    type: string
+                  min_score:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                bucket: 1
+                freq_epsilon: "394.00"
+                freq_score: "3.00"
+                max_epsilon: "2.77"
+                max_score: "-4.19"
+                min_epsilon: "-0.85"
+                min_score: "-4.99"
+  
+
+  /getFreqNiche_V:
+    get:
+      description: |
+        Obtiene la frecuencia de epsilon y score por especie, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que son considerados en el proceso de validación
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de epsilon y score por especie
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  bucket:
+                    type: integer
+                  freq_epsilon:
+                    type: string
+                  freq_score:
+                    type: string
+                  max_epsilon:
+                    type: string
+                  max_score:
+                    type: string
+                  min_epsilon:
+                    type: string
+                  min_score:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                bucket: 1
+                freq_epsilon: "394.00"
+                freq_score: "3.00"
+                max_epsilon: "2.77"
+                max_score: "-4.19"
+                min_epsilon: "-0.85"
+                min_score: "-4.99"
+                  
+            
+    post:
+      description: |
+        Obtiene la frecuencia de epsilon y score por especie, basados en especie objetivo y grupo de variables seleccionado. escarta los registros que son utilizados en el proceso de validación
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de epsilon y score por especie
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  bucket:
+                    type: integer
+                  freq_epsilon:
+                    type: string
+                  freq_score:
+                    type: string
+                  max_epsilon:
+                    type: string
+                  max_score:
+                    type: string
+                  min_epsilon:
+                    type: string
+                  min_score:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                bucket: 1
+                freq_epsilon: "394.00"
+                freq_score: "3.00"
+                max_epsilon: "2.77"
+                max_score: "-4.19"
+                min_epsilon: "-0.85"
+                min_score: "-4.99"
+      
+
+  /getFreqNiche_VT:
+    get:
+      description: |
+        Obtiene la frecuencia de epsilon y score por especie, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo y descarta registros que son considerados en el proceso de validación
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos y descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de epsilon y score por especie
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  bucket:
+                    type: integer
+                  freq_epsilon:
+                    type: string
+                  freq_score:
+                    type: string
+                  max_epsilon:
+                    type: string
+                  max_score:
+                    type: string
+                  min_epsilon:
+                    type: string
+                  min_score:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                bucket: 1
+                freq_epsilon: "394.00"
+                freq_score: "3.00"
+                max_epsilon: "2.77"
+                max_score: "-4.19"
+                min_epsilon: "-0.85"
+                min_score: "-4.99"
+                  
+            
+    post:
+      description: |
+        Obtiene la frecuencia de epsilon y score por especie, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo y descarta registros que son considerados en el proceso de validación
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos y descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de epsilon y score por especie
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  
+                  bucket:
+                    type: integer
+                  freq_epsilon:
+                    type: string
+                  freq_score:
+                    type: string
+                  max_epsilon:
+                    type: string
+                  max_score:
+                    type: string
+                  min_epsilon:
+                    type: string
+                  min_score:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                bucket: 1
+                freq_epsilon: "394.00"
+                freq_score: "3.00"
+                max_epsilon: "2.77"
+                max_score: "-4.19"
+                min_epsilon: "-0.85"
+                min_score: "-4.99"
+
+
+
+  /getFreqMapNiche:
+    get:
+      description: |
+        Obtiene la suma de score por celda para desplegar un mapa de presencia, basados en especie objetivo y grupo de variables seleccionado
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+
+
+      responses:
+        "200":
+          description: Retorna un objeto json con los id de celdas y su score relacionado
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  tscore:
+                    type: float
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  tscore: 211.59
+                -
+                  gridid: 79071
+                  tscore: 11.32
+            
+    post:
+      description: |
+        Obtiene la suma de score por celda para desplegar un mapa de presencia, basados en especie objetivo y grupo de variables seleccionado
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos y descartadas por el proceso de validación
+          type: array
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con los id de celdas y su score relacionado
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  tscore:
+                    type: float
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  tscore: 211.59
+                -
+                  gridid: 79071
+                  tscore: 11.32
+
+  
+
+  /getFreqMapNiche_T:
+    get:
+      description: |
+        Obtiene la suma de score por celda para desplegar un mapa de presencia, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+
+
+      responses:
+        "200":
+          description: Retorna un objeto json con los id de celdas y su score relacionado
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  tscore:
+                    type: float
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  tscore: 211.59
+                -
+                  gridid: 79071
+                  tscore: 11.32
+            
+    post:
+      description: |
+        Obtiene la suma de score por celda para desplegar un mapa de presencia, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con los id de celdas y su score relacionado
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  tscore:
+                    type: float
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  tscore: 211.59
+                -
+                  gridid: 79071
+                  tscore: 11.32
+
+
+
+  /getFreqMapNiche_A:
+    get:
+      description: |
+        Obtiene la suma de score por celda para desplegar un mapa de presencia, basados en especie objetivo y grupo de variables seleccionado. Se suma el valor a priori a la suma por celda, el valor a priori es calculado con la fórmula: ln(ni / (n - ni))
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: apriori
+          in: query
+          description: |
+            Bandera que confirma si se desea sumar a priori
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+
+      responses:
+        "200":
+          description: Retorna un objeto json con los id de celdas y su score relacionado
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  tscore:
+                    type: float
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  tscore: 211.59
+                -
+                  gridid: 79071
+                  tscore: 11.32
+            
+    post:
+      description: |
+        Obtiene la suma de score por celda para desplegar un mapa de presencia, basados en especie objetivo y grupo de variables seleccionado. Suma el valor a priori a la suma por celda con la fórmula: ln(ni / (n - ni))
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: apriori
+          in: query
+          description: |
+            Bandera que confirma si se desea sumar a priori
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con los id de celdas y su score relacionado
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  tscore:
+                    type: float
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  tscore: 211.59
+                -
+                  gridid: 79071
+                  tscore: 11.32
+
+
+
+  /getFreqMapNiche_M:
+    get:
+      description: |
+        Obtiene la suma de score por celda para desplegar un mapa de presencia, basados en especie objetivo y grupo de variables seleccionado. Se obtiene la probabilidad de presencia con la fórmula: exp(score+apriori) / (1 + exp(score+apriori))
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: mapa_prob
+          in: query
+          description: |
+            Bandera que confirma si se desea el resultado como probabilidad
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+
+      responses:
+        "200":
+          description: Retorna un objeto json con los id de celdas y su score relacionado
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  tscore:
+                    type: float
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  tscore: 0.97
+                -
+                  gridid: 79071
+                  tscore: 0.34
+            
+    post:
+      description: |
+        Obtiene la suma de score por celda para desplegar un mapa de presencia, basados en especie objetivo y grupo de variables seleccionado. Se obtiene la probabilidad de presencia con la fórmula: exp(score+apriori) / (1 + exp(score+apriori))
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: mapa_prob
+          in: query
+          description: |
+            Bandera que confirma si se desea el resultado como probabilidad
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con los id de celdas y su score relacionado
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  tscore:
+                    type: float
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  tscore: 0.97
+                -
+                  gridid: 79071
+                  tscore: 0.34
+
+
+
+  
+  /getFreqCeldaNiche:
+    get:
+      description: |
+         Obtiene la frecuencia de score por celda, basados en especie objetivo y grupo de variables seleccionado.
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de score por celda
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  bucket:
+                    type: integer
+                  freq:
+                    type: string
+                  max:
+                    type: string
+                  min:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  bucket: 1
+                  freq: "3"
+                  max: "-41.88"
+                  min: "-55.23"
+                -
+                  bucket: 2
+                  freq: "1"
+                  max: "-28.54"
+                  min: "-41.88"
+            
+    post:
+      description: |
+        Obtiene la frecuencia de score por celda, basados en especie objetivo y grupo de variables seleccionado.
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de score por celda
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  bucket:
+                    type: integer
+                  freq:
+                    type: string
+                  max:
+                    type: string
+                  min:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  bucket: 1
+                  freq: "3"
+                  max: "-41.88"
+                  min: "-55.23"
+                -
+                  bucket: 2
+                  freq: "1"
+                  max: "-28.54"
+                  min: "-41.88"
+
+
+  
+  
+  /getFreqCeldaNiche_T:
+    get:
+      description: |
+         Obtiene la frecuencia de score por celda, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de score por celda
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  bucket:
+                    type: integer
+                  freq:
+                    type: string
+                  max:
+                    type: string
+                  min:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  bucket: 1
+                  freq: "3"
+                  max: "-41.88"
+                  min: "-55.23"
+                -
+                  bucket: 2
+                  freq: "1"
+                  max: "-28.54"
+                  min: "-41.88"
+            
+    post:
+      description: |
+        Obtiene la frecuencia de score por celda, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+        
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de score por celda
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  bucket:
+                    type: integer
+                  freq:
+                    type: string
+                  max:
+                    type: string
+                  min:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  bucket: 1
+                  freq: "3"
+                  max: "-41.88"
+                  min: "-55.23"
+                -
+                  bucket: 2
+                  freq: "1"
+                  max: "-28.54"
+                  min: "-41.88"
+
+
+  
+  /getFreqCeldaNiche_V:
+    get:
+      description: |
+         Obtiene la frecuencia de score por celda, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que son considerados en el proceso de validación
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        
+
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de score por celda
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  bucket:
+                    type: integer
+                  freq:
+                    type: string
+                  max:
+                    type: string
+                  min:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  bucket: 1
+                  freq: "3"
+                  max: "-41.88"
+                  min: "-55.23"
+                -
+                  bucket: 2
+                  freq: "1"
+                  max: "-28.54"
+                  min: "-41.88"
+            
+    post:
+      description: |
+        Obtiene la frecuencia de score por celda, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que son considerados en el proceso de validación
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de score por celda
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  bucket:
+                    type: integer
+                  freq:
+                    type: string
+                  max:
+                    type: string
+                  min:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  bucket: 1
+                  freq: "3"
+                  max: "-41.88"
+                  min: "-55.23"
+                -
+                  bucket: 2
+                  freq: "1"
+                  max: "-28.54"
+                  min: "-41.88"
+
+
+  
+  /getFreqCeldaNiche_A:
+    get:
+      description: |
+         Obtiene la frecuencia de score por celda, basados en especie objetivo y grupo de variables seleccionado. Se suma el valor a priori a la suma por celda, el valor a priori es calculado con la fórmula: ln(ni / (n - ni))
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: apriori
+          in: query
+          description: |
+            Bandera que confirma si se desea sumar a priori
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        
+
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de score por celda
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  bucket:
+                    type: integer
+                  freq:
+                    type: string
+                  max:
+                    type: string
+                  min:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  bucket: 1
+                  freq: "3"
+                  max: "-41.88"
+                  min: "-55.23"
+                -
+                  bucket: 2
+                  freq: "1"
+                  max: "-28.54"
+                  min: "-41.88"
+            
+    post:
+      description: |
+        Obtiene la frecuencia de score por celda, basados en especie objetivo y grupo de variables seleccionado. Se suma el valor a priori a la suma por celda, el valor a priori es calculado con la fórmula: ln(ni / (n - ni))
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: apriori
+          in: query
+          description: |
+            Bandera que confirma si se desea sumar a priori
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con la freciencia de score por celda
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  bucket:
+                    type: integer
+                  freq:
+                    type: string
+                  max:
+                    type: string
+                  min:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  bucket: 1
+                  freq: "3"
+                  max: "-41.88"
+                  min: "-55.23"
+                -
+                  bucket: 2
+                  freq: "1"
+                  max: "-28.54"
+                  min: "-41.88"
+
+
+
+
+
+  /getScoreDecilNiche:
+    get:
+      description: |
+         Obtiene el score por celda agrupado por decil, basados en especie objetivo y grupo de variables seleccionado
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: groupid
+          in: query
+          description: |
+            Identificador del grupo biotico o abiotico que se esta calculando
+          type: integer
+          required: true
+        
+
+      responses:
+        "200":
+          description: Retorna un objeto json con score por celda agrupado por decil
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  l_sup:
+                    type: float
+                  l_inf:
+                    type: float
+                  sum:
+                    type: float
+                  avg:
+                    type: float
+                  decil:
+                    type: integer
+                  gridids:
+                    type: array
+                  arraynames:
+                    type: array
+                  
+          examples:
+            application/json:
+              data:
+                l_sup: 170.92
+                l_inf: 4.61
+                sum: 5375.25
+                avg: 10.08
+                decil: 10
+                gridids: [743,802,967,983]
+                arraynames: ["28196|Bos javanicus|7.53|9.35|1|1","28633|Poabromylus kayi|7.53|9.35|1|1","28232|Rangifer|5.08|2.95|8|3"]
+                  
+            
+    post:
+      description: |
+        Obtiene el score por celda agrupado por decil, basados en especie objetivo y grupo de variables seleccionado
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: groupid
+          in: query
+          description: |
+            Identificador del grupo biotico o abiotico que se esta calculando
+          type: integer
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con score por celda agrupado por decil
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  l_sup:
+                    type: float
+                  l_inf:
+                    type: float
+                  sum:
+                    type: float
+                  avg:
+                    type: float
+                  decil:
+                    type: integer
+                  gridids:
+                    type: array
+                  arraynames:
+                    type: array
+                  
+          examples:
+            application/json:
+              data:
+                l_sup: 170.92
+                l_inf: 4.61
+                sum: 5375.25
+                avg: 10.08
+                decil: 10
+                gridids: [743,802,967,983]
+                arraynames: ["28196|Bos javanicus|7.53|9.35|1|1","28633|Poabromylus kayi|7.53|9.35|1|1","28232|Rangifer|5.08|2.95|8|3"]
+
+
+
+
+  /getScoreDecilNiche_T:
+    get:
+      description: |
+         Obtiene el score por celda agrupado por decil, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: groupid
+          in: query
+          description: |
+            Identificador del grupo biotico o abiotico que se esta calculando
+          type: integer
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+
+      responses:
+        "200":
+          description: Retorna un objeto json con score por celda agrupado por decil
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  l_sup:
+                    type: float
+                  l_inf:
+                    type: float
+                  sum:
+                    type: float
+                  avg:
+                    type: float
+                  decil:
+                    type: integer
+                  gridids:
+                    type: array
+                  arraynames:
+                    type: array
+                  
+          examples:
+            application/json:
+              data:
+                l_sup: 170.92
+                l_inf: 4.61
+                sum: 5375.25
+                avg: 10.08
+                decil: 10
+                gridids: [743,802,967,983]
+                arraynames: ["28196|Bos javanicus|7.53|9.35|1|1","28633|Poabromylus kayi|7.53|9.35|1|1","28232|Rangifer|5.08|2.95|8|3"]
+                  
+            
+    post:
+      description: |
+        Obtiene el score por celda agrupado por decil, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: groupid
+          in: query
+          description: |
+            Identificador del grupo biotico o abiotico que se esta calculando
+          type: integer
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con score por celda agrupado por decil
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  l_sup:
+                    type: float
+                  l_inf:
+                    type: float
+                  sum:
+                    type: float
+                  avg:
+                    type: float
+                  decil:
+                    type: integer
+                  gridids:
+                    type: array
+                  arraynames:
+                    type: array
+                  
+          examples:
+            application/json:
+              data:
+                l_sup: 170.92
+                l_inf: 4.61
+                sum: 5375.25
+                avg: 10.08
+                decil: 10
+                gridids: [743,802,967,983]
+                arraynames: ["28196|Bos javanicus|7.53|9.35|1|1","28633|Poabromylus kayi|7.53|9.35|1|1","28232|Rangifer|5.08|2.95|8|3"]
+
+
+  
+
+  /getScoreDecilNiche_V:
+    get:
+      description: |
+         Obtiene el score por celda agrupado por decil, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que son considerados en el proceso de validación
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: groupid
+          in: query
+          description: |
+            Identificador del grupo biotico o abiotico que se esta calculando
+          type: integer
+          required: true
+       
+
+      responses:
+        "200":
+          description: Retorna un objeto json con score por celda agrupado por decil
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  l_sup:
+                    type: float
+                  l_inf:
+                    type: float
+                  sum:
+                    type: float
+                  avg:
+                    type: float
+                  decil:
+                    type: integer
+                  gridids:
+                    type: array
+                  arraynames:
+                    type: array
+                  
+          examples:
+            application/json:
+              data:
+                l_sup: 170.92
+                l_inf: 4.61
+                sum: 5375.25
+                avg: 10.08
+                decil: 10
+                gridids: [743,802,967,983]
+                arraynames: ["28196|Bos javanicus|7.53|9.35|1|1","28633|Poabromylus kayi|7.53|9.35|1|1","28232|Rangifer|5.08|2.95|8|3"]
+                  
+            
+    post:
+      description: |
+        Obtiene el score por celda agrupado por decil, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que son considerados en el proceso de validación
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: groupid
+          in: query
+          description: |
+            Identificador del grupo biotico o abiotico que se esta calculando
+          type: integer
+          required: true
+       
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con score por celda agrupado por decil
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  l_sup:
+                    type: float
+                  l_inf:
+                    type: float
+                  sum:
+                    type: float
+                  avg:
+                    type: float
+                  decil:
+                    type: integer
+                  gridids:
+                    type: array
+                  arraynames:
+                    type: array
+                  
+          examples:
+            application/json:
+              data:
+                l_sup: 170.92
+                l_inf: 4.61
+                sum: 5375.25
+                avg: 10.08
+                decil: 10
+                gridids: [743,802,967,983]
+                arraynames: ["28196|Bos javanicus|7.53|9.35|1|1","28633|Poabromylus kayi|7.53|9.35|1|1","28232|Rangifer|5.08|2.95|8|3"]
+
+
+  
+
+  /getScoreDecilNiche_A:
+    get:
+      description: |
+         Obtiene el score por celda agrupado por decil, basados en especie objetivo y grupo de variables seleccionado. Se suma el valor a priori a la suma por celda, el valor a priori es calculado con la fórmula: ln(ni / (n - ni))
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: groupid
+          in: query
+          description: |
+            Identificador del grupo biotico o abiotico que se esta calculando
+          type: integer
+          required: true
+        - 
+          name: apriori
+          in: query
+          description: |
+            Bandera que confirma si se desea sumar a priori
+          type: boolean
+          required: true
+       
+
+      responses:
+        "200":
+          description: Retorna un objeto json con score por celda agrupado por decil
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  l_sup:
+                    type: float
+                  l_inf:
+                    type: float
+                  sum:
+                    type: float
+                  avg:
+                    type: float
+                  decil:
+                    type: integer
+                  gridids:
+                    type: array
+                  arraynames:
+                    type: array
+                  
+          examples:
+            application/json:
+              data:
+                l_sup: 170.92
+                l_inf: 4.61
+                sum: 5375.25
+                avg: 10.08
+                decil: 10
+                gridids: [743,802,967,983]
+                arraynames: ["28196|Bos javanicus|7.53|9.35|1|1","28633|Poabromylus kayi|7.53|9.35|1|1","28232|Rangifer|5.08|2.95|8|3"]
+                  
+            
+    post:
+      description: |
+        Obtiene el score por celda agrupado por decil, basados en especie objetivo y grupo de variables seleccionado. Se suma el valor a priori a la suma por celda, el valor a priori es calculado con la fórmula: ln(ni / (n - ni))
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedids
+          in: query
+          description: |
+            Arreglo de celdas descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: groupid
+          in: query
+          description: |
+            Identificador del grupo biotico o abiotico que se esta calculando
+          type: integer
+          required: true
+        - 
+          name: apriori
+          in: query
+          description: |
+            Bandera que confirma si se desea sumar a priori
+          type: boolean
+          required: true
+       
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con score por celda agrupado por decil
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  l_sup:
+                    type: float
+                  l_inf:
+                    type: float
+                  sum:
+                    type: float
+                  avg:
+                    type: float
+                  decil:
+                    type: integer
+                  gridids:
+                    type: array
+                  arraynames:
+                    type: array
+                  
+          examples:
+            application/json:
+              data:
+                l_sup: 170.92
+                l_inf: 4.61
+                sum: 5375.25
+                avg: 10.08
+                decil: 10
+                gridids: [743,802,967,983]
+                arraynames: ["28196|Bos javanicus|7.53|9.35|1|1","28633|Poabromylus kayi|7.53|9.35|1|1","28232|Rangifer|5.08|2.95|8|3"]
+
+
+
+
+  
+
+  /getGridSpeciesNiche:
+    get:
+      description: |
+        Obtiene la suma del score de la celda que intersecta con los parámetros de latitud y longitud enviados, basados en especie objetivo y grupo de variables seleccionado
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: lat
+          in: query
+          description: |
+            Latitud de la coordenada seleccionada
+          type: float
+          required: true
+        - 
+          name: long
+          in: query
+          description: |
+            Longitud de la coordenada seleccionada
+          type: array
+          required: true
+
+
+      responses:
+        "200":
+          description: Retorna un objeto json con la suma de score por celda que intersecta con la coordenada enviada
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  spid:
+                    type: integer
+                  score:
+                    type: string
+                  nom_sp:
+                    type: string
+                  label:
+                    type: string
+                  rango:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  spid: 211.59
+                  score: "34.23"
+                  nom_sp: "Sus scrofa"
+                  label: ""
+                  rango: ""
+
+                
+            
+    post:
+      description: |
+        Obtiene la suma del score de la celda que intersecta con los parámetros de latitud y longitud enviados, basados en especie objetivo y grupo de variables seleccionado
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos y descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: lat
+          in: query
+          description: |
+            Latitud de la coordenada seleccionada
+          type: float
+          required: true
+        - 
+          name: long
+          in: query
+          description: |
+            Longitud de la coordenada seleccionada
+          type: array
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con la suma de score por celda que intersecta con la coordenada enviada
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  spid:
+                    type: integer
+                  score:
+                    type: string
+                  nom_sp:
+                    type: string
+                  label:
+                    type: string
+                  rango:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  spid: 211.59
+                  score: "34.23"
+                  nom_sp: "Sus scrofa"
+                  label: ""
+                  rango: ""
+
+
+
+
+  /getGridSpeciesNiche_T:
+    get:
+      description: |
+        Obtiene la suma del score de la celda que intersecta con los parámetros de latitud y longitud enviados, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: lat
+          in: query
+          description: |
+            Latitud de la coordenada seleccionada
+          type: float
+          required: true
+        - 
+          name: long
+          in: query
+          description: |
+            Longitud de la coordenada seleccionada
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+
+
+      responses:
+        "200":
+          description: Retorna un objeto json con la suma de score por celda que intersecta con la coordenada enviada
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  spid:
+                    type: integer
+                  score:
+                    type: string
+                  nom_sp:
+                    type: string
+                  label:
+                    type: string
+                  rango:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  spid: 211.59
+                  score: "34.23"
+                  nom_sp: "Sus scrofa"
+                  label: ""
+                  rango: ""
+
+                            
+    post:
+      description: |
+        Obtiene la suma del score de la celda que intersecta con los parámetros de latitud y longitud enviados, basados en especie objetivo y grupo de variables seleccionado. Descarta registros que no cumplen con los filtros de tiempo
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos y descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: lat
+          in: query
+          description: |
+            Latitud de la coordenada seleccionada
+          type: float
+          required: true
+        - 
+          name: long
+          in: query
+          description: |
+            Longitud de la coordenada seleccionada
+          type: array
+          required: true
+        - 
+          name: discardedDateFilterids
+          in: query
+          description: |
+            Bandera que confirma si hay filtros temporales
+          type: boolean
+          required: true
+        - 
+          name: sfecha
+          in: query
+          description: |
+            Bandera que confirma si seran filtrados los registros sin fecha
+          type: boolean
+          required: true
+        - 
+          name: lim_inf
+          in: query
+          description: |
+            Año de inicio para filtrar registros
+          type: integer
+          required: true
+        - 
+          name: lim_sup
+          in: query
+          description: |
+            Año límite para filtrar registros
+          type: boolean
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con la suma de score por celda que intersecta con la coordenada enviada
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  spid:
+                    type: integer
+                  score:
+                    type: string
+                  nom_sp:
+                    type: string
+                  label:
+                    type: string
+                  rango:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  spid: 211.59
+                  score: "34.23"
+                  nom_sp: "Sus scrofa"
+                  label: ""
+                  rango: ""
+
+  
+
+
+
+  /getGridSpeciesNiche_A:
+    get:
+      description: |
+        Obtiene la suma del score de la celda que intersecta con los parámetros de latitud y longitud enviados, basados en especie objetivo y grupo de variables seleccionado. Se suma el valor a priori a la suma por celda, el valor a priori es calculado con la fórmula: ln(ni / (n - ni))
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: lat
+          in: query
+          description: |
+            Latitud de la coordenada seleccionada
+          type: float
+          required: true
+        - 
+          name: long
+          in: query
+          description: |
+            Longitud de la coordenada seleccionada
+          type: array
+          required: true
+        - 
+          name: apriori
+          in: query
+          description: |
+            Bandera que confirma si se desea sumar a priori
+          type: boolean
+          required: true
+
+
+      responses:
+        "200":
+          description: Retorna un objeto json con la suma de score por celda que intersecta con la coordenada enviada
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  spid:
+                    type: integer
+                  score:
+                    type: string
+                  nom_sp:
+                    type: string
+                  label:
+                    type: string
+                  rango:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  spid: 211.59
+                  score: "34.23"
+                  nom_sp: "Sus scrofa"
+                  label: ""
+                  rango: ""
+
+            
+    post:
+      description: |
+        Obtiene la suma del score de la celda que intersecta con los parámetros de latitud y longitud enviados, basados en especie objetivo y grupo de variables seleccionado. Se suma el valor a priori a la suma por celda, el valor a priori es calculado con la fórmula: ln(ni / (n - ni))
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos y descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: lat
+          in: query
+          description: |
+            Latitud de la coordenada seleccionada
+          type: float
+          required: true
+        - 
+          name: long
+          in: query
+          description: |
+            Longitud de la coordenada seleccionada
+          type: array
+          required: true
+        - 
+          name: apriori
+          in: query
+          description: |
+            Bandera que confirma si se desea sumar a priori
+          type: boolean
+          required: true
+        
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con la suma de score por celda que intersecta con la coordenada enviada
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  spid:
+                    type: integer
+                  score:
+                    type: string
+                  nom_sp:
+                    type: string
+                  label:
+                    type: string
+                  rango:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  spid: 211.59
+                  score: "34.23"
+                  nom_sp: "Sus scrofa"
+                  label: ""
+                  rango: ""
+
+  
+
+
+  /getGridSpeciesNiche_M:
+    get:
+      description: |
+        Obtiene la suma del score de la celda que intersecta con los parámetros de latitud y longitud enviados, basados en especie objetivo y grupo de variables seleccionado. Se obtiene la probabilidad de presencia con la fórmula: exp(score+apriori) / (1 + exp(score+apriori))
+      parameters:
+        -
+          name: id
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos
+          type: array
+          required: true
+        - 
+          name: lat
+          in: query
+          description: |
+            Latitud de la coordenada seleccionada
+          type: float
+          required: true
+        - 
+          name: long
+          in: query
+          description: |
+            Longitud de la coordenada seleccionada
+          type: array
+          required: true
+        - 
+          name: mapa_prob
+          in: query
+          description: |
+            Bandera que confirma si se desea el resultado como probabilidad
+          type: boolean
+          required: true
+
+
+      responses:
+        "200":
+          description: Retorna un objeto json con la suma de score por celda que intersecta con la coordenada enviada
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  spid:
+                    type: integer
+                  score:
+                    type: string
+                  nom_sp:
+                    type: string
+                  label:
+                    type: string
+                  rango:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  spid: 211.59
+                  score: "34.23"
+                  nom_sp: "Sus scrofa"
+                  label: ""
+                  rango: ""
+
+            
+    post:
+      description: |
+        Obtiene la suma del score de la celda que intersecta con los parámetros de latitud y longitud enviados, basados en especie objetivo y grupo de variables seleccionado. Se suma el valor a priori a la suma por celda, el valor a priori es calculado con la fórmula: ln(ni / (n - ni))
+      parameters:
+        -
+          name: type
+          in: query
+          description: |
+            Id de la especie objetivo
+          type: string
+          required: true
+        - 
+          name: tfilters
+          in: query
+          description: |
+            Array que contiene el grupo de variables seleccionado
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Resolución de la malla con la cual se desea hacer el cálculo
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasBios
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico
+          type: boolean
+          required: true
+        - 
+          name: hasRaster
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico
+          type: boolean
+          required: true
+        - 
+          name: discardedFilterids
+          in: query
+          description: |
+            Arreglo de celdas de la especie objetivo que fueron descartadas por elimianción de puntos y descartadas por el proceso de validación
+          type: array
+          required: true
+        - 
+          name: lat
+          in: query
+          description: |
+            Latitud de la coordenada seleccionada
+          type: float
+          required: true
+        - 
+          name: long
+          in: query
+          description: |
+            Longitud de la coordenada seleccionada
+          type: array
+          required: true
+        - 
+          name: mapa_prob
+          in: query
+          description: |
+            Bandera que confirma si se desea el resultado como probabilidad
+          type: boolean
+          required: true
+        
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con la suma de score por celda que intersecta con la coordenada enviada
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  gridid:
+                    type: integer
+                  spid:
+                    type: integer
+                  score:
+                    type: string
+                  nom_sp:
+                    type: string
+                  label:
+                    type: string
+                  rango:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  gridid: 79059
+                  spid: 211.59
+                  score: "34.23"
+                  nom_sp: "Sus scrofa"
+                  label: ""
+                  rango: ""
+
+
+
+
+  /getEdgesNiche:
+    get:
+      description: |
+        Obtiene las relaciones entre los grupos de variables seleccionados por medio del valor de epsilon
+      parameters:
+        - 
+          name: s_tfilters
+          in: query
+          description: |
+            Array que contiene los grupos de variables source
+          type: json
+          required: true
+        - 
+          name: t_tfilters
+          in: query
+          description: |
+            Array que contiene los grupos de variables target
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasbiosource
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico en source
+          type: boolean
+          required: true
+        - 
+          name: hasbiotarget
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico en target
+          type: boolean
+          required: true
+        - 
+          name: hasrastersource
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico en source
+          type: boolean
+          required: true
+        - 
+          name: hasrastertarget
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico en target
+          type: boolean
+          required: true
+
+
+      responses:
+        "200":
+          description: Retorna un objeto json con las relaciones de los grupos de variables seleccionados
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  source:
+                    type: integer
+                  target:
+                    type: integer
+                  nij:
+                    type: integer
+                  ni:
+                    type: integer
+                  nj:
+                    type: integer
+                  n:
+                    type: integer
+                  value:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  source: 34567
+                  target: 56789
+                  nij: 8
+                  ni: 35
+                  nj: 10
+                  n: 14707
+                  value: "24.56"
+                                
+            
+    post:
+      description: |
+        Obtiene las relaciones entre los grupos de variables seleccionados por medio del valor de epsilon
+      parameters:
+        - 
+          name: s_tfilters
+          in: query
+          description: |
+            Array que contiene los grupos de variables source
+          type: json
+          required: true
+        - 
+          name: t_tfilters
+          in: query
+          description: |
+            Array que contiene los grupos de variables target
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasbiosource
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico en source
+          type: boolean
+          required: true
+        - 
+          name: hasbiotarget
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico en target
+          type: boolean
+          required: true
+        - 
+          name: hasrastersource
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico en source
+          type: boolean
+          required: true
+        - 
+          name: hasrastertarget
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico en target
+          type: boolean
+          required: true
+        -
+          name: footprint_region
+          in: query
+          description: |
+            Entero que indica el ID de las areas disponibles para hacer analisis
+          type: integer
+          required: true
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con las relaciones de los grupos de variables seleccionados
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  source:
+                    type: integer
+                  target:
+                    type: integer
+                  nij:
+                    type: integer
+                  ni:
+                    type: integer
+                  nj:
+                    type: integer
+                  n:
+                    type: integer
+                  value:
+                    type: string
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  source: 34567
+                  target: 56789
+                  nij: 8
+                  ni: 35
+                  nj: 10
+                  n: 14707
+                  value: "24.56"
+
+  
+
+
+  /getNodesNiche:
+    get:
+      description: |
+        Obtiene las variables bióticas y abióticas entre los grupos de variables seleccionados por medio del valor de epsilon
+      parameters:
+        - 
+          name: s_tfilters
+          in: query
+          description: |
+            Array que contiene los grupos de variables source
+          type: json
+          required: true
+        - 
+          name: t_tfilters
+          in: query
+          description: |
+            Array que contiene los grupos de variables target
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasbiosource
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico en source
+          type: boolean
+          required: true
+        - 
+          name: hasbiotarget
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico en target
+          type: boolean
+          required: true
+        - 
+          name: hasrastersource
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico en source
+          type: boolean
+          required: true
+        - 
+          name: hasrastertarget
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico en target
+          type: boolean
+          required: true
+
+
+      responses:
+        "200":
+          description: Retorna un objeto json con las variables bióticas y abióticas de los grupos de variables seleccionados
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  spid:
+                    type: integer
+                  reinovalido:
+                    type: string
+                  phylumdivisionvalido:
+                    type: string
+                  clasevalida:
+                    type: string
+                  ordenvalido:
+                    type: string
+                  familiavalida:
+                    type: string
+                  generovalido:
+                    type: string
+                  label:
+                    type: string
+                  grp:
+                    type: integer
+                  occ:
+                    type: integer
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  spid: 8922
+                  reinovalido: Animalia
+                  phylumdivisionvalido: Arthropoda
+                  clasevalida: Insecta
+                  ordenvalido: Diptera
+                  familiavalida: Culicidae
+                  generovalido: Aedes
+                  label: Aedes allotecnon
+                  grp: 1
+                  occ: 5
+                                               
+            
+    post:
+      description: |
+        description: Retorna un objeto json con las variables bióticas y abióticas de los grupos de variables seleccionados
+      parameters:
+        - 
+          name: s_tfilters
+          in: query
+          description: |
+            Array que contiene los grupos de variables source
+          type: json
+          required: true
+        - 
+          name: t_tfilters
+          in: query
+          description: |
+            Array que contiene los grupos de variables target
+          type: json
+          required: true
+        - 
+          name: res_celda
+          in: query
+          description: |
+            Nombre de la columna de las ocurrencias de las especies a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: res_grid
+          in: query
+          description: |
+            Nombre de la columna de las celdas de la malla a una resolución determinada
+          type: string
+          required: true
+        - 
+          name: min_occ
+          in: query
+          description: |
+            Mínimo de celdas ocupadas por nj para ser considerado en el cálculo de epsilon y score
+          type: string
+          required: true
+        - 
+          name: hasbiosource
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico en source
+          type: boolean
+          required: true
+        - 
+          name: hasbiotarget
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo biotico en target
+          type: boolean
+          required: true
+        - 
+          name: hasrastersource
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico en source
+          type: boolean
+          required: true
+        - 
+          name: hasrastertarget
+          in: query
+          description: |
+            Bandera que confirma si existen variables de tipo abiotico en target
+          type: boolean
+          required: true
+        
+          
+      responses:
+        "200":
+          description: Retorna un objeto json con las variables bióticas y abióticas de los grupos de variables seleccionados
+          schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  spid:
+                    type: integer
+                  reinovalido:
+                    type: string
+                  phylumdivisionvalido:
+                    type: string
+                  clasevalida:
+                    type: string
+                  ordenvalido:
+                    type: string
+                  familiavalida:
+                    type: string
+                  generovalido:
+                    type: string
+                  label:
+                    type: string
+                  grp:
+                    type: integer
+                  occ:
+                    type: integer
+                  
+          examples:
+            application/json:
+              data:
+                -
+                  spid: 8922
+                  reinovalido: Animalia
+                  phylumdivisionvalido: Arthropoda
+                  clasevalida: Insecta
+                  ordenvalido: Diptera
+                  familiavalida: Culicidae
+                  generovalido: Aedes
+                  label: Aedes allotecnon
+                  grp: 1
+                  occ: 5
+
+
+
+  

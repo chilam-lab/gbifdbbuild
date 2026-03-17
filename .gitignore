@@ -1,0 +1,4 @@
+.DS_store
+dbbuild/data/
+middleware_gbif/nodemodules
+.env

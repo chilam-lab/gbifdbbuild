@@ -1,0 +1,1255 @@
+openapi: 3.0.1
+info:
+  title: SPECIES-API
+  description: Endpoints del API SPECIES ver (species.c3.unam.mx)
+  version: "1.0.1"
+servers:
+  - url: 'http://species.conabio.gob.mx'
+paths:
+  /api-db-dev/niche/especie/getUserReg:
+    post:
+      summary: Verifica si ya existe el usuario de SPECIES con el email dado.
+      description: Email.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                    "email":"jromero@conabio.gob.mx"
+                  }
+      responses:
+        '200':
+          description: 1 si existe, 0 si no.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        count:
+                          type: integer
+                  ok:
+                    type: boolean
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n  \"data\": \r\n  [\r\n    {\r\n      \"count\": \"1\"\r\n    }\r\n  ],\r\n  \"ok\": true\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/getNodes:
+    post:
+      summary: Obtiene los nodos de analisis en comunidad.
+      description: Filtros para fuente y objetivo.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                qtype:
+                  type: string
+                footprint_region:
+                  type: integer
+                t_tfilters:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      parent:
+                        type: string
+                      field:
+                        type: string
+                      grp:
+                        type: integer
+                      fGroupId:
+                        type: integer
+                      type:
+                        type: integer
+                      value:
+                        type: string
+                s_tfilters:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      parent:
+                        type: string
+                      field:
+                        type: string
+                      grp:
+                        type: integer
+                      fGroupId:
+                        type: integer
+                      type:
+                        type: integer
+                      value:
+                        type: string
+                hasbiosource:
+                  type: boolean
+                hasrastersource:
+                  type: boolean
+                min_occ:
+                  type: integer
+                grid_res:
+                  type: string
+                hasbiotarget:
+                  type: boolean
+                hasrastertarget:
+                  type: boolean
+            examples:
+              '0':
+                value: |-
+                  {
+                      "qtype":"getNodes",
+                      "s_tfilters":[
+                          {
+                              "field":"generovalido",
+                              "value":"Lynx",
+                              "type":0,
+                              "parent":"",
+                              "fGroupId":1,
+                              "grp":0
+                          }
+                      ],
+                      "t_tfilters":[
+                          {
+                              "field":"especievalidabusqueda",
+                              "value":"Aedes aegypti",
+                              "type":0,
+                              "parent":"",
+                              "fGroupId":2,
+                              "grp":1
+                          }
+                      ],
+                      "hasbiosource":true,
+                      "hasrastersource":false,
+                      "hasbiotarget":true,
+                      "hasrastertarget":false,
+                      "min_occ":5,
+                      "grid_res":"16",
+                      "footprint_region":1
+                  }
+      responses:
+        '200':
+          description: Nodos.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        spid: 
+                          type: integer
+                        reinovalido:
+                          type: string
+                        phylumdivisionvalido:
+                          type: string
+                        clasevalida:
+                          type: string
+                        ordenvalido:
+                          type: string
+                        familiavalida:
+                          type: string
+                        generovalido:
+                          type: string
+                        label:
+                          type: string
+                        grp:
+                          type: integer
+                        occ:
+                          type: integer
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n  \"data\": \r\n  [\r\n    {\r\n      \"spid\": 83206,\r\n      \"reinovalido\": \"Animalia\",\r\n      \"phylumdivisionvalido\": \"Chordata\",\r\n      \"clasevalida\": \"Mammalia\",\r\n      \"ordenvalido\": \"Carnivora\",\r\n      \"familiavalida\": \"Felidae\",\r\n      \"generovalido\": \"Lynx\",\r\n      \"label\": \"Lynx proterolyncis\",\r\n      \"grp\": 1,\r\n      \"occ\": 0\r\n    },\r\n    {\r\n      \"spid\": 27333,\r\n      \"reinovalido\": \"Animalia\",\r\n      \"phylumdivisionvalido\": \"Chordata\",\r\n      \"clasevalida\": \"Mammalia\",\r\n      \"ordenvalido\": \"Carnivora\",\r\n      \"familiavalida\": \"Felidae\",\r\n      \"generovalido\": \"Lynx\",\r\n      \"label\": \"Lynx rufus\",\r\n      \"grp\": 1,\r\n      \"occ\": 303\r\n    }\r\n  ]\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/counts:
+    post:
+      summary: Obtiene analisis de nicho con la especie objetivo y cavariables dadas.
+      description: configuracion para analisis de nicho.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sfecha:
+                  type: boolean
+                with_data_freq:
+                  type: boolean
+                hasBios:
+                  type: boolean
+                discardedFilterids:
+                  type: array
+                  items:
+                    type: string
+                val_process:
+                  type: boolean
+                fossil:
+                  type: boolean
+                idtabla:
+                  type: string
+                idtime:
+                  type: number
+                min_occ:
+                  type: integer
+                with_data_score_cell:
+                  type: boolean
+                level_req:
+                  type: string
+                hasRaster:
+                  type: boolean
+                with_data_freq_cell:
+                  type: boolean
+                footprint_region:
+                  type: integer
+                time:
+                  type: number
+                id:
+                  type: integer
+                grid_res:
+                  type: string
+                with_data_score_decil:
+                  type: boolean
+                tfilters:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      level:
+                        type: integer
+                      label:
+                        type: string
+                      type:
+                        type: integer
+                      value:
+                        type: string
+                      group_item:
+                        type: integer
+            examples:
+              '0':
+                value: |-
+                  {
+                      "time":1548971604601,
+                      "footprint_region":1,
+                      "fossil":true,
+                      "grid_res":"16",
+                      "hasBios":false,
+                      "hasRaster":true,
+                      "id":27333,
+                      "idtabla":"no_table",
+                      "min_occ":5,
+                      "sfecha":true,
+                      "val_process":false,
+                      "idtime":1548971598079,
+                      "level_req":"single",
+                      "with_data_freq":false,
+                      "with_data_score_cell":false,
+                      "with_data_freq_cell":false,
+                      "with_data_score_decil":false,
+                      "discardedFilterids":[],
+                      "tfilters":[
+                          {
+                              "value":"worldclim",
+                              "type":1,
+                              "level":1,
+                              "group_item":1,
+                              "label":"worldclim"
+                          }
+                      ]
+                  }
+      responses:
+        '200':
+          description: Calculo de epsilon y score de cada covariables.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        spid: 
+                          type: integer
+                        tipo:
+                          type: integer
+                        reinovalido:
+                          type: string
+                        phylumdivisionvalido:
+                          type: string
+                        clasevalida:
+                          type: string
+                        ordenvalido:
+                          type: string
+                        familiavalida:
+                          type: string
+                        generovalido:
+                          type: string
+                        especievalidabusqueda:
+                          type: string
+                        cells:
+                          type: array
+                          items:
+                            type: integer
+                        nij:
+                          type: integer
+                        ni:
+                          type: integer
+                        nj:
+                          type: integer
+                        n:
+                          type: integer
+                        epsilon:
+                          type: number
+                        score:
+                          type: number
+            application/json; charset=utf-8:
+                schema:
+                  type: string
+                examples: "{\r\n  \"ok\": true,\r\n  \"data\": \r\n  [\r\n    {\r\n      \"spid\": 300104,\r\n      \"tipo\": 1,\r\n      \"reinovalido\": \"\",\r\n      \"phylumdivisionvalido\": \"\",\r\n      \"clasevalida\": \"\",\r\n      \"ordenvalido\": \"\",\r\n      \"familiavalida\": \"\",\r\n      \"generovalido\": \"\",\r\n      \"especievalidabusqueda\": \"bio011 0.05 3.35\",\r\n      \"cells\": \r\n      [\r\n        11688,\r\n        25343,\r\n        11685,\r\n        11686,\r\n        25338,\r\n        11687,\r\n        25341,\r\n        44983,\r\n        47471,\r\n        44984,\r\n        44995,\r\n        10544,\r\n        47472,\r\n        25340\r\n      ],\r\n      \"nij\": 7,\r\n      \"nj\": 14,\r\n      \"ni\": 303,\r\n      \"n\": 9843,\r\n      \"epsilon\": \"10.16\",\r\n      \"score\": \"3.45\"\r\n    }\r\n  ]\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/countsByGroup:
+    post:
+      summary: Agrupamiento de variables en analisis de nicho.
+      description: Configuracion, Ids de grupo objetivo y Ids de grupos de covariables.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                covariables:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      species_list:
+                        type: array
+                        items:
+                          type: integer
+                      label:
+                        type: string
+                grid_resolution:
+                  type: string
+                target_species_list:
+                  type: array
+                  items:
+                    type: integer
+                covariables_min_cells:
+                  type: integer
+                target_label:
+                  type: string
+                world_region:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                      "grid_resolution":"16",
+                      "target_label": "Linces",
+                      "world_region": "1",
+                      "target_species_list": [27333],
+                      "covariables_min_cells": 5,
+                      "covariables": [
+                          { 
+                              "label": "Carnivoros",
+                              "species_list": [8922]
+                          }
+                      ]
+                  }
+      responses:
+        '200':
+          description: Calculo de epsilon y score para cada grupo covariables.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name_gpo_source:
+                          type: string
+                        spid: 
+                          type: integer
+                        tipo:
+                          type: integer
+                        reinovalido:
+                          type: string
+                        phylumdivisionvalido:
+                          type: string
+                        clasevalida:
+                          type: string
+                        ordenvalido:
+                          type: string
+                        familiavalida:
+                          type: string
+                        generovalido:
+                          type: string
+                        especievalidabusqueda:
+                          type: string
+                        cells:
+                          type: array
+                          items:
+                            type: integer
+                        nij:
+                          type: integer
+                        ni:
+                          type: integer
+                        nj:
+                          type: integer
+                        n:
+                          type: integer
+                        epsilon:
+                          type: number
+                        score:
+                          type: number
+            application/json; charset=utf-8:
+                schema:
+                  type: string
+                examples: "{\r\n  \"ok\": true,\r\n  \"data\": \r\n  [\r\n    {\r\n      \"name_gpo_source\": \"Linces\",\r\n      \"spid\": 8922,\r\n      \"tipo\": 0,\r\n      \"reinovalido\": \"Animalia\",\r\n      \"phylumdivisionvalido\": \"Arthropoda\",\r\n      \"clasevalida\": \"Insecta\",\r\n      \"ordenvalido\": \"Diptera\",\r\n      \"familiavalida\": \"Culicidae\",\r\n      \"generovalido\": \"Aedes\",\r\n      \"especievalidabusqueda\": \"Aedes aegypti\",\r\n      \"cells\": \r\n      [\r\n        52270,\r\n        46141,\r\n        46320,\r\n        64202,\r\n        45048,\r\n        54508,\r\n        52221,\r\n        51072,\r\n        32984\r\n      ],\r\n      \"nij\": 39,\r\n      \"nj\": 795,\r\n      \"ni\": 303,\r\n      \"n\": 9873,\r\n      \"epsilon\": \"3.00\",\r\n      \"score\": \"0.49\"\r\n    }\r\n  ]\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/getEdges:
+    post:
+      summary: Obtiene las aristas de un analisis de comunidad.
+      description: Filtros para fuente y objetivo.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                qtype:
+                  type: string
+                footprint_region:
+                  type: integer
+                t_tfilters:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      parent:
+                        type: string
+                      field:
+                        type: string
+                      grp:
+                        type: integer
+                      fGroupId:
+                        type: integer
+                      type:
+                        type: integer
+                      value:
+                        type: string
+                s_tfilters:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      parent:
+                        type: string
+                      field:
+                        type: string
+                      grp:
+                        type: integer
+                      fGroupId:
+                        type: integer
+                      type:
+                        type: integer
+                      value:
+                        type: string
+                hasbiosource:
+                  type: boolean
+                hasrastersource:
+                  type: boolean
+                ep_th:
+                  type: integer
+                min_occ:
+                  type: integer
+                grid_res:
+                  type: string
+                hasbiotarget:
+                  type: boolean
+                hasrastertarget:
+                  type: boolean
+            examples:
+              '0':
+                value: |-
+                  {
+                      "qtype":"getEdges",
+                      "s_tfilters":[
+                          {
+                              "field":"generovalido",
+                              "value":"Lynx",
+                              "type":0,
+                              "parent":"",
+                              "fGroupId":1,
+                              "grp":0
+                          }
+                      ],
+                      "t_tfilters":[
+                          {
+                              "field":"especievalidabusqueda",
+                              "value":"Aedes aegypti",
+                              "type":0,
+                              "parent":"",
+                              "fGroupId":2,
+                              "grp":1
+                          }
+                      ],
+                      "hasbiosource":true,
+                      "hasrastersource":false,
+                      "hasbiotarget":true,
+                      "hasrastertarget":false,
+                      "ep_th":0,
+                      "min_occ":5,
+                      "grid_res":"16",
+                      "footprint_region":1
+                  }
+      responses:
+        '200':
+          description: Aristas de analisis de comunidad.
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      source:
+                        type: integer
+                      target:
+                        type: integer
+                      nij:
+                        type: integer
+                      nj: 
+                        type: integer
+                      ni:
+                        type: integer
+                      n:
+                        type: integer
+                      value:
+                        type: number
+                      score:
+                        type: number
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n\"data\": [\r\n  {\r\n\"source\": 27333,\r\n\"target\": 8922,\r\n\"nij\": 39,\r\n\"nj\": 795,\r\n\"ni\": 303,\r\n\"n\": 9843,\r\n\"value\": \"2.98\",\r\n\"score\": \"0.49\"\r\n}\r\n],\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/cells:
+    post:
+      summary: Obtiene los Ids de celdas con presencia de resolucion dada para especie con spid dado.
+      description: Id de especie y resolucion.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sp_id:
+                  type: integer
+                cells_res:
+                  type: integer
+            examples:
+              '0':
+                value: |-
+                  {
+                      "sp_id": 27333,
+                      "cells_res":16
+                  }
+      responses:
+        '200':
+          description: Ids de celdas con presencia de la especie.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        cell_ids: 
+                          type: array
+                          items:
+                            type: integer
+                        especie:
+                          type: string
+                  cells_col:
+                    type: string
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n  \"data\": \r\n  {\r\n    \"cell_ids\": \r\n    [\r\n      82509,\r\n      18706,\r\n      54819,\r\n      51038,\r\n      4827\r\n    ],\r\n    \"especie\": \"Lynx rufus\"\r\n  },\r\n  \"cells_col\": \"cells_16km\"\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/especie/getUserToken:
+    post:
+      summary: Obtiene token de usuario dado email.
+      description: Email.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                    "email":"jromero@conabio.gob.mx"
+                  }
+      responses:
+        '200':
+          description: Token de usuario.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        count:
+                          type: integer
+                  token:
+                    type: string
+                  ok:
+                    type: boolean
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n\"data\": [\r\n  {\r\n\"count\": \"1\"\r\n}\r\n],\r\n\"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvIjp7InVzZXIiOiJqcm9tZXJvQGNvbmFiaW8uZ29iLm14In0sImlhdCI6MTU0OTkyOTEwNiwiZXhwIjoxNTQ5OTQzNTA2fQ.SerygiXCeM_IkOxzulZnLClhf1I7hBz_ECLGP-M2mvw\",\r\n\"ok\": true\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/especie/getEntList:
+    post:
+      summary: Obtiene los posibles nombres de especies que coinciden con la cadena de busqueda dada.
+      description: Cadena de busqueda y region de interes.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                searchStr:
+                  type: string
+                footprint_region:
+                  type: integer
+                limit:
+                  type: boolean
+                source:
+                  type: integer
+                grid_res:
+                  type: integer
+            examples:
+              '0':
+                value: "{\n  \t\"limit\": true,\n\t\"searchStr\": \"Lynx\",\n\t\"source\": 1,\n\t\"grid_res\": 16,\n\t\"footprint_region\": 3\n}"
+      responses:
+        '200':
+          description: Taxonomia de especies que coinciden con la cadena de busqueda y el numero de ocurrencias.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                      items: object
+                      properties: 
+                        spid:
+                          type: integer
+                        reinovalido:
+                          type: string
+                        phylumdivisionvalido:
+                          type: string
+                        clasevalida:
+                          type: string
+                        ordenvalido:
+                          type: string
+                        familiavalida:
+                          type: string
+                        generovalido:
+                          type: string
+                        especievalidabusqueda:
+                          type: string
+                        occ:
+                          type: integer
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n  \"data\": \r\n  [\r\n    {\r\n      \"spid\": 83206,\r\n      \"reinovalido\": \"Animalia\",\r\n      \"phylumdivisionvalido\": \"Chordata\",\r\n      \"clasevalida\": \"Mammalia\",\r\n      \"ordenvalido\": \"Carnivora\",\r\n      \"familiavalida\": \"Felidae\",\r\n      \"generovalido\": \"Lynx\",\r\n      \"especievalidabusqueda\": \"Lynx proterolyncis\",\r\n      \"occ\": 2\r\n    },\r\n    {\r\n      \"spid\": 83207,\r\n      \"reinovalido\": \"Animalia\",\r\n      \"phylumdivisionvalido\": \"Chordata\",\r\n      \"clasevalida\": \"Mammalia\",\r\n      \"ordenvalido\": \"Carnivora\",\r\n      \"familiavalida\": \"Felidae\",\r\n      \"generovalido\": \"Lynx\",\r\n      \"especievalidabusqueda\": \"Lynx longignathus\",\r\n      \"occ\": 1\r\n    }\r\n  ]\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/especie/setUserReg:
+    post:
+      summary: Registra usuario de SPECIES.
+      description: Email y nombre de usuario.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                usuario:
+                  type: string
+                email:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                    "email":"promero@conabio.gob.mx",
+                    "usuario":"Pedro Romero"
+                  }
+      responses:
+        '200':
+          description: True si lo guardo, False si no.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                  ok:
+                    type: boolean
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n\"data\": [],\r\n\"ok\": true\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+
+  /api-db-dev/niche/countsTaxonsGroup:
+    post:
+      description: Obtiene analisis de nicho con el grupo de variables objetivo y los grupos de covariables dados.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: boolean
+                  description: Especifica si se incluyen registros solo con fecha
+                lim_inf:
+                  type: integer
+                  description: Limite inferior del rango de año 
+                lim_sup:
+                  type: integer
+                  description: Limite superior del rango de año 
+                with_data_freq:
+                  type: boolean
+                excluded_cells:
+                  type: array
+                  description: Ids de celdas excluidas para el análisis
+                  items:
+                    type: integer
+                fosil:
+                  type: boolean
+                  description: Especifica si se incluyen registros fósiles
+                idtabla:
+                  type: string
+                  description: Id de la tabla de validación 
+                idtime:
+                  type: number
+                  description: "Parámetro dado por el cliente, no es necesario"
+                apriori:
+                  type: boolean
+                  description: Especifica si se agrega el apriori
+                mapa_prob:
+                  type: boolean
+                  description: Especifica si se agrega el mapa de probabilidad
+                min_cells:
+                  type: integer
+                  description: Especifica el numero de celdas para considerar covariables
+                with_data_score_cell:
+                  type: boolean
+                with_data_freq_cell:
+                  type: boolean
+                get_grid_specie:
+                  type: boolean
+                  description: Especifica si el análisis es de selección por celda
+                region:
+                  type: integer
+                  description: Especifica el Id de la región de interés del análisis
+                grid_resolution:
+                  type: integer
+                  description: Especifica el tamaño de resolución de la malla
+                with_data_score_decil:
+                  type: boolean
+                target_name:
+                  type: string
+                  description: Nombre dado al grupo objetivo
+                longitud:
+                  type: number
+                  description: Parámetro  necesario solo en análisis por celda
+                latitud:
+                  type: number
+                  description: Parámetro  necesario solo en análisis por celda
+                target_taxons:
+                  type: array
+                  description: Arreglo para especificar el conjunto de variables que va a conformar el grupo objetivo
+                  items:
+                    type: object
+                    properties:
+                      taxon_rank: 
+                        type: string
+                        description: Se especifica el taxón 
+                      value: 
+                        type: string
+                        description: Se especifica el valor
+                covariables:
+                  type: array
+                  description: Arreglo para especificar los conjuntos de variables que van conformar los grupos de covariables
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: Nombre del grupo de covariables
+                      biotic:
+                        type: boolean
+                        description: Especifica si es biótico o abiótico
+                      merge_vars:
+                        type: array
+                        items: 
+                          type: object
+                          properties:
+                            rank:
+                              type: string
+                              description: Se especifica el taxón
+                            value:
+                              type: string
+                              description: Se especifica el valor
+                            level:
+                              type: string
+                              description: Se especifica el taxón de agrupamiento
+            examples:
+              '0':
+                value: |-
+                  target_taxons:
+                    - taxon_rank: species
+                      value: Aedes aegypti
+                  idtime: 1557853095248
+                  apriori: false
+                  mapa_prob: false
+                  min_cells: 5
+                  fosil: false
+                  date: false
+                  idtabla: tbl_1557853087247
+                  grid_resolution: 16
+                  region: 1
+                  get_grid_species: false
+                  with_data_score_cell: true
+                  with_data_freq: true
+                  with_data_freq_cell: true
+                  with_data_score_decil: false
+                  excluded_cells: []
+                  target_name: targetGroup
+                  covariables:
+                    - name: GpoBio1
+                      biotic: true
+                      merge_vars:
+                        - rank: order
+                          value: Didelphimorphia
+                          type: 0
+                          level: species
+                      group_item: 1
+                  
+      responses:
+        '200':
+          description: Calculo de epsilon y score para cada grupo de covariables.
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+
+  /api-db-dev/niche/getTaxonsGroupNodes:
+    post:
+      description: Obtiene los nodos de analisis en comunidad con agrupamiento.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source:
+                  description: Especifica el taxon y nivel de agrupamiento de los nodos fuente
+                  type: array
+                  items: 
+                    type: object
+                    properties:
+                      biotic: 
+                        description: Especifica si es biótico o abiótico 
+                        type: boolean
+                      rank: 
+                        description: Se especifica el taxón
+                        type: string
+                      value: 
+                        description: Se especifica el valor
+                        type: string
+                      level: 
+                        description: Se especifica el taxón de agrupamiento
+                        type: string
+                target:
+                  description: Especifica el taxon y nivel de agrupamiento de los nodos objetivo
+                  type: array
+                  items: 
+                    type: object
+                    properties:
+                      biotic: 
+                        description: Especifica si es biótico o abiótico 
+                        type: boolean
+                      rank: 
+                        description: Se especifica el taxón
+                        type: string
+                      value: 
+                        description: Se especifica el valor
+                        type: string
+                      level: 
+                        description: Se especifica el taxón de agrupamiento
+                        type: string
+                min_occ:
+                  description: Minimo de celdas ocupada por nodo para tomarse en cuenta
+                  type: integer
+                grid_res: 
+                  description: Especifica el tamaño de resolución de la malla
+                  type: integer
+                region:
+                  description: Especifica el Id de la región de interés del análisis
+                  type: integer
+            examples:
+              '0':
+                value: |-
+                  source:
+                    - biotic: true
+                      rank: species
+                      value: Lynx rufus
+                      level: species
+                    - biotic: false
+                      rank: layer
+                      value: bio020
+                      level: bid
+                  target:
+                    - biotic: false
+                      rank: type
+                      value: '1'
+                      level: bid
+                  min_occ: 5
+                  grid_res: '16'
+                  region: 1
+                  
+      responses:
+        '200':
+          description: Nodos.
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+
+  /api-db-dev/niche/getTaxonsGroupEdges:
+    post:
+      description: Obtiene las aristas de un analisis de comunidad con agrupamiento.
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                source:
+                  description: Especifica el taxon y nivel de agrupamiento de los nodos fuente
+                  type: array
+                  items: 
+                    type: object
+                    properties:
+                      biotic: 
+                        description: Especifica si es biótico o abiótico 
+                        type: boolean
+                      rank: 
+                        description: Se especifica el taxón
+                        type: string
+                      value: 
+                        description: Se especifica el valor
+                        type: string
+                      level: 
+                        description: Se especifica el taxón de agrupamiento
+                        type: string
+                target:
+                  type: array
+                  items: 
+                    type: object
+                    properties:
+                      biotic: 
+                        description: Especifica si es biótico o abiótico 
+                        type: boolean
+                      rank: 
+                        description: Se especifica el taxón
+                        type: string
+                      value: 
+                        description: Se especifica el valor
+                        type: string
+                      level: 
+                        description: Se especifica el taxón de agrupamiento
+                        type: string
+                min_occ:
+                  description: Minimo de celdas ocupada por nodo para tomarse en cuenta
+                  type: integer
+                grid_res: 
+                  description: Especifica el tamaño de resolución de la malla
+                  type: integer
+                region:
+                  description: Especifica el Id de la región de interés del análisis
+                  type: integer
+            examples:
+              '0':
+                value: |-
+                  source:
+                    - biotic: true
+                      rank: species
+                      value: Lynx rufus
+                      level: species
+                    - biotic: false
+                      rank: layer
+                      value: bio020
+                      level: bid
+                  target:
+                    - biotic: false
+                      rank: type
+                      value: '1'
+                      level: bid
+                  min_occ: 5
+                  grid_res: '16'
+                  region: 1
+                  
+      responses:
+        '200':
+          description: Aristas.
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+
+  /api-db-dev/niche/getGroupCountGridid:
+    post:
+      description: Obtiene la distribucion (en celdas) de los nodos dados en la region de interes.
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                nodes:
+                  description: Especifica los nodos para los que se requiere la distribucion.
+                  type: array
+                  items: 
+                    type: object
+                    properties:
+                      biotic: 
+                        description: Especifica si es biótico o abiótico 
+                        type: boolean
+                      merge_vars:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            rank: 
+                              description: Se especifica el taxón
+                              type: string
+                            value: 
+                              description: Se especifica el valor
+                              type: string
+                grid_res: 
+                  description: Especifica el tamaño de resolución de la malla
+                  type: integer
+                region:
+                  description: Especifica el Id de la región de interés del análisis
+                  type: integer
+            examples:
+              '0':
+                value: |-
+                  grid_res: 16
+                  region: 1
+                  nodes:
+                    - biotic: true
+                      merge_vars:
+                        - rank: class
+                          value: Mammalia
+                        - rank: kingdom
+                          value: Plantae
+      responses:
+        '200':
+          description: Lista de Ids de celdas con al menos una ocurrencia de algun nodo y conteo de distintos nodos en la celda.
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+
+  /api-db-dev/niche/especie/getToken:
+    get:
+      summary: Obtiene un token para analisis.
+      description: Parametros de configuracion.
+      responses:
+        '200':
+          description: Token.
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: "{\r\n  \"data\": \r\n  [\r\n    {\r\n      \"token\": \"f2617f71a846650c2ee7d974e939614b\"\r\n    }\r\n  ]\r\n}"
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'
+  /api-db-dev/niche/getGeoRel:
+    post:
+      summary: 
+      description: Auto generated using Swagger Inspector
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hasRaster:
+                  type: boolean
+                lim_sup:
+                  type: string
+                footprint_region:
+                  type: integer
+                hasBios:
+                  type: boolean
+                lim_inf:
+                  type: string
+                id:
+                  type: integer
+                fosil:
+                  type: boolean
+                grid_res:
+                  type: string
+                tfilters:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      parent:
+                        type: string
+                      field:
+                        type: string
+                      grp:
+                        type: integer
+                      fGroupId:
+                        type: integer
+                      type:
+                        type: integer
+                      value:
+                        type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                      "id":27333,
+                      "tfilters":[
+                          {
+                              "field":"especievalidabusqueda",
+                              "value":"Aedes aegypti",
+                              "type":0,
+                              "parent":"",
+                              "fGroupId":2,
+                              "grp":1
+                          }
+                      ],
+                      "hasBios":true,
+                      "hasRaster":false,
+                      "fosil":false,
+                      "lim_inf":"1500",
+                      "lim_sup":"2019-01-29",
+                      "grid_res":"16",
+                      "footprint_region":1
+                  }
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+      servers:
+        - url: 'http://species.conabio.gob.mx'
+    servers:
+      - url: 'http://species.conabio.gob.mx'

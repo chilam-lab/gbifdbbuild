@@ -11,6 +11,7 @@ const config = {
     host: process.env.DBHOST,
     port: process.env.DBPORT,
     application_name: 'GBIF_Middleware',
+    ssl: false,
     poolSize: 10,
   },
   db_mallas: {
@@ -20,6 +21,7 @@ const config = {
     host: process.env.DBHOST_MALLAS,
     port: process.env.DBPORT_MALLAS,
     application_name: 'MallasV3_Middleware',
+    ssl: false,
     poolSize: 10,
   },
   port: process.env.PORT,

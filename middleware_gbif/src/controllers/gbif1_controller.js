@@ -129,6 +129,8 @@ exports.get_variable_byid = async function (req, res) {
     }
 
     const column_taxon = catRow.column_taxon_name;
+    // class/order/family are PostgreSQL reserved words — always quote as identifier
+    const column_taxon_sql = `"${column_taxon}"`;
 
     const query_array = [];
     if (q !== '') {
@@ -154,9 +156,9 @@ exports.get_variable_byid = async function (req, res) {
              array_agg(id_especie) AS level_id,
              ('$<dic_taxon_data:raw>')::jsonb AS datos
       FROM sp_gbif
-      WHERE $<column_taxon:raw> <> '' {filters}
+      WHERE $<column_taxon_sql:raw> <> '' {filters}
       GROUP BY $<dic_taxon_group:raw>
-      ORDER BY $<column_taxon:raw>
+      ORDER BY $<column_taxon_sql:raw>
       OFFSET $<offset:raw>
       LIMIT $<limit:raw>
     `;
@@ -168,10 +170,10 @@ exports.get_variable_byid = async function (req, res) {
     query = query.replace(/levels_id/g, 'id_especie');
 
     const data = await pool.any(query, {
-      id:              catRow.id,
-      column_taxon:    column_taxon,
-      dic_taxon_data:  dic_taxon_data.get(column_taxon),
-      dic_taxon_group: dic_taxon_group.get(column_taxon),
+      id:               catRow.id,
+      column_taxon_sql,
+      dic_taxon_data:   dic_taxon_data.get(column_taxon),
+      dic_taxon_group:  dic_taxon_group.get(column_taxon),
       offset,
       limit,
     });

@@ -29,6 +29,7 @@ from aux_functions import get_sql, setup_logger
 # ---------------------------------------------------------------------------
 
 BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / '.env')
 
 create_extensions_sql   = str(BASE_DIR / 'sql' / 'create_extensions.sql')
 create_gbif_table_sql   = str(BASE_DIR / 'sql' / 'create_gbif_table.sql')
@@ -37,7 +38,8 @@ create_cat_taxon_sql    = str(BASE_DIR / 'sql' / 'create_cat_taxon.sql')
 create_mesh_fdw_sql     = str(BASE_DIR / 'sql' / 'create_mesh_fdw.sql')
 
 # Archivo de ocurrencias Darwin Core (TSV)
-RUTA_ARCHIVO = os.getenv('GBIF_FILE', '/data/occurrence.txt')
+_gbif_file_env = os.getenv('GBIF_FILE', 'data/occurrence.txt')
+RUTA_ARCHIVO = _gbif_file_env if os.path.isabs(_gbif_file_env) else str(BASE_DIR / _gbif_file_env)
 CHUNK_SIZE   = int(os.getenv('GBIF_CHUNK_SIZE', '10000'))
 BATCH_SIZE   = int(os.getenv('GBIF_BATCH_SIZE', '1000'))
 
@@ -50,7 +52,6 @@ GBIF_COLUMNS = [
 ]
 
 logger = setup_logger()
-load_dotenv()
 
 
 def get_conn(autocommit=False):
@@ -140,7 +141,6 @@ try:
         on_bad_lines='skip',
         chunksize=CHUNK_SIZE,
         engine='python',
-        low_memory=False,
     )):
         if i < start_chunk:
             continue

@@ -40,7 +40,7 @@ dic_taxon_db.set('reino','kingdom')
 exports.variables = async function (req, res) {
   try {
     const data = await pool.any(
-      `SELECT id, description AS variable, filter_fields, available_grids
+      `SELECT id, taxon AS variable, filter_fields, available_grids
        FROM cat_taxon
        ORDER BY id;`,
       {}
@@ -142,11 +142,19 @@ exports.get_variable_byid = async function (req, res) {
         if (!valid_filters.includes(filter_param)) continue;
 
         const values = rawValue.trim().split(',');
-        const clauses = values.map(v =>
-          filter_param === 'levels_id'
-            ? `${dic_taxon_db.get(filter_param)} = ${v.trim()}`
-            : `${dic_taxon_db.get(filter_param)} = '${v.trim()}'`
-        );
+        const col = dic_taxon_db.get(filter_param);
+        const clauses = values.map(v => {
+          if (filter_param === 'levels_id') {
+            return `${col} = ${v.trim()}`;
+          }
+          const safeValue = String(v.trim()).replace(/'/g, "''");
+          if (filter_param === 'especie') {
+            // exacto para no incluir subespecies
+            return `lower(${col}) = lower('${safeValue}')`;
+          }
+          // prefijo para el resto de los niveles (mismo comportamiento que SNIB)
+          return `lower(${col}) like lower('${safeValue}%')`;
+        });
         query_array.push(`( ${clauses.join(' OR ')} )`);
       }
     }
@@ -201,14 +209,15 @@ exports.get_data_byid = async function (req, res) {
 
     const [catRow, gridInfo] = await Promise.all([
       pool.oneOrNone('SELECT id, column_taxon_name FROM cat_taxon WHERE id = $1', [variable_id]),
-      pool_mallas.oneOrNone('SELECT res_column, table_cell_name FROM gridmeshes WHERE id = $1', [grid_id]),
+      pool_mallas.oneOrNone('SELECT resolution, table_cell_name FROM cat_grid WHERE grid_id = $1', [grid_id]),
     ]);
 
     if (!catRow) return res.status(404).json({ message: `variable_id ${variable_id} no existe` });
     if (!gridInfo) return res.status(404).json({ message: `grid_id ${grid_id} no existe` });
 
-    const { column_taxon } = catRow;
-    const { res_column, table_cell_name } = gridInfo;
+    const column_taxon = catRow.column_taxon_name;
+    const { table_cell_name } = gridInfo;
+    const res_column = `gridid_${String(gridInfo.resolution).toLowerCase()}`;
 
     let queryPts = `
       SELECT DISTINCT

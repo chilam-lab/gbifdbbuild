@@ -43,7 +43,7 @@ app.use(session({
 
 // Routes for our api
 var gbif1Router = require('./routes/gbif1router')
-app.use('/gbif1', gbif1Router)
+app.use('/gbif', gbif1Router)
 
 
 // Start the server

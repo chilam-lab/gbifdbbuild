@@ -27,7 +27,11 @@ const config = {
     port: process.env.DBPORT_MALLAS,
     application_name: 'MallasGBIF_Middleware',
     ssl: false,
-    poolSize: 10,
+    // 25 (antes 10): mismo ajuste que speciesdbbuild — el cruce punto->celda de
+    // get_data_byid resolvía una especie por conexión en oleadas de GRID_WAVE,
+    // volviéndose lento para búsquedas con muchas especies. Ver config.js de
+    // middleware_speciesv3 para el detalle completo.
+    poolSize: 25,
     connectionTimeoutMillis: Number(process.env.DB_CONNECTION_TIMEOUT_MS || 5000),
     idleTimeoutMillis: Number(process.env.DB_IDLE_TIMEOUT_MS || 30000),
     query_timeout: Number(process.env.DB_MALLAS_QUERY_TIMEOUT_MS || 600000),

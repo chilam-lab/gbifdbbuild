@@ -316,7 +316,7 @@ exports.get_data_byid = async function (req, res) {
       query_array.push({ query_temp, id_especie: row.id_especie, datos: row.datos });
     }
 
-    const GRID_WAVE = 10;
+    const GRID_WAVE = 25; // debe ser <= db_mallas.poolSize (config.js)
     const results = [];
     for (let i = 0; i < query_array.length; i += GRID_WAVE) {
       const wave = query_array.slice(i, i + GRID_WAVE);

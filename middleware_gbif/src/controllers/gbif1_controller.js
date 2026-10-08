@@ -259,10 +259,41 @@ exports.get_data_byid = async function (req, res) {
 
     queryPts = queryPts.replace('{min_occ}', '').replace('{in_fosil}', '').replace('{in_sin_fecha}', '');
 
+    // Cache: sp_gbif.cells_<resolucion> lo llena dbbuild/precompute_gbif_cells.py
+    // y también el write-back de abajo. Solo es seguro sin filtros activos:
+    // min_occ/in_sin_fecha cambian qué ocurrencias cuentan y el precálculo
+    // asume la vista sin filtrar.
+    const VALID_RESOLUTIONS = new Set(['64km', '32km', '16km', '8km', 'ageb', 'cue', 'mun', 'state']);
+    const canUseCache = filter_names.length === 0 && VALID_RESOLUTIONS.has(String(gridInfo.resolution));
+    const cellsColumn = `cells_${gridInfo.resolution}`;
+
+    let cachedRows = [];
+    let pendingLevelsId = levels_id;
+    if (canUseCache && levels_id.length > 0) {
+      cachedRows = await pool.any(
+        `SELECT id_especie, ${cellsColumn} AS cells, ('$<dic_taxon_data:raw>')::jsonb AS datos
+         FROM sp_gbif
+         WHERE id_especie IN ($<spids:csv>) AND ${cellsColumn} IS NOT NULL`,
+        { spids: levels_id, ...snibParams }
+      ).catch(err => { debug('cache lookup:', err.message); return []; });
+      cachedRows.forEach(r => { r.id_especie = Number(r.id_especie); });
+      const cachedIds = new Set(cachedRows.map(r => r.id_especie));
+      pendingLevelsId = levels_id.filter(id => !cachedIds.has(Number(id)));
+    }
+
+    const cachedResponse = cachedRows.map(r => ({
+      id:       variable_id,
+      grid_id,
+      level_id: r.id_especie,
+      metadata: r.datos,
+      cells:    r.cells || [],
+      n:        (r.cells || []).length,
+    }));
+
     // Fetch points in batches
     const idChunks = [];
-    for (let i = 0; i < levels_id.length; i += SPID_BATCH) {
-      idChunks.push(levels_id.slice(i, i + SPID_BATCH));
+    for (let i = 0; i < pendingLevelsId.length; i += SPID_BATCH) {
+      idChunks.push(pendingLevelsId.slice(i, i + SPID_BATCH));
     }
 
     const datapoints = [];
@@ -278,7 +309,7 @@ exports.get_data_byid = async function (req, res) {
     }
 
     if (datapoints.length === 0) {
-      return res.status(200).json([]);
+      return res.status(200).json(cachedResponse);
     }
 
     const query_array = [];
@@ -340,7 +371,24 @@ exports.get_data_byid = async function (req, res) {
       };
     });
 
-    return res.status(200).json(response_array);
+    // Write-back: guarda lo calculado en vivo para que la próxima consulta de
+    // la misma especie/resolución salga del cache. No bloquea la respuesta.
+    // Solo especies sin muestreo de puntos: con más de MAX_PTS_PER_ID el
+    // resultado vivo es una muestra y no debe quedar como definitivo.
+    if (canUseCache) {
+      const sampled = new Set(datapoints
+        .filter(r => r.points && new Set(r.points).size > MAX_PTS_PER_ID)
+        .map(r => r.id_especie));
+      Promise.all(response_array
+        .filter(r => !sampled.has(r.level_id))
+        .map(r => pool.none(
+          `UPDATE sp_gbif SET ${cellsColumn} = $<cells>::integer[] WHERE id_especie = $<id>`,
+          { cells: r.cells, id: r.level_id }
+        ).catch(err => debug('cache write-back:', err.message)))
+      ).catch(() => {});
+    }
+
+    return res.status(200).json(cachedResponse.concat(response_array));
 
   } catch (error) {
     debug(error);

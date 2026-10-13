@@ -202,6 +202,9 @@ exports.get_data_byid = async function (req, res) {
     const levels_id     = verb_utils.getParam(req, 'levels_id', []);
     const filter_names  = verb_utils.getParam(req, 'filter_names', []);
     const filter_values = verb_utils.getParam(req, 'filter_values', []);
+    // with_counts: agrega n_occ (registros con coordenadas que pasan los
+    // filtros) a cada especie; lo usa el resumen del mapa de Target.
+    const with_counts   = verb_utils.getParam(req, 'with_counts', false) === true;
 
     const SPID_BATCH     = 10;
     const WAVE_SIZE      = 10;
@@ -296,6 +299,22 @@ exports.get_data_byid = async function (req, res) {
       pendingLevelsId = levels_id.filter(id => !cachedIds.has(Number(id)));
     }
 
+    const respond = async (rows) => {
+      if (with_counts && rows.length > 0) {
+        const counts = await pool.any(
+          `SELECT id_especie, count(*)::int AS n_occ
+           FROM gbif
+           WHERE id_especie IN ($<ids:csv>) AND geom IS NOT NULL
+           ${conditions.map(c => ` AND ${c}`).join('')}
+           GROUP BY id_especie`,
+          { ids: rows.map(r => r.level_id) }
+        ).catch(err => { debug('counts:', err.message); return []; });
+        const nById = new Map(counts.map(r => [Number(r.id_especie), r.n_occ]));
+        rows.forEach(r => { r.n_occ = nById.get(Number(r.level_id)) ?? 0; });
+      }
+      return res.status(200).json(rows);
+    };
+
     const cachedResponse = cachedRows.map(r => ({
       id:       variable_id,
       grid_id,
@@ -324,7 +343,7 @@ exports.get_data_byid = async function (req, res) {
     }
 
     if (datapoints.length === 0) {
-      return res.status(200).json(cachedResponse);
+      return respond(cachedResponse);
     }
 
     // Todos los puntos únicos, sin muestreo: el resultado debe coincidir con
@@ -413,7 +432,7 @@ exports.get_data_byid = async function (req, res) {
       ).catch(() => {});
     }
 
-    return res.status(200).json(cachedResponse.concat(response_array));
+    return respond(cachedResponse.concat(response_array));
 
   } catch (error) {
     debug(error);

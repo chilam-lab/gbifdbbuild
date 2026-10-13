@@ -273,6 +273,9 @@ exports.get_cell_occ = async function (req, res) {
       `SELECT species AS nombre,
               ${GBIF_ANIO_SQL} AS anio,
               NULL::text AS fecha,
+              'GBIF'::text AS fuente,
+              NULL::text AS coleccion,
+              "basisOfRecord" AS tipo,
               'https://www.gbif.org/occurrence/' || "gbifID" AS url
        FROM gbif
        WHERE id_especie IN ($<ids:csv>)

@@ -226,7 +226,7 @@ exports.get_data_byid = async function (req, res) {
       FROM gbif s
       WHERE id_especie IN ($<spids:csv>)
         AND geom IS NOT NULL
-        {in_fosil} {in_sin_fecha}
+        {filters}
       GROUP BY id_especie, $<dic_taxon_group:raw>
       {min_occ}
     `;
@@ -235,6 +235,10 @@ exports.get_data_byid = async function (req, res) {
       dic_taxon_data:  dic_taxon_data.get(column_taxon),
       dic_taxon_group: dic_taxon_group.get(column_taxon),
     };
+
+    // Año del registro: year es texto ('2020'); NULL = registro sin fecha.
+    const ANIO_SQL = `(CASE WHEN year ~ '^[0-9]{4}' THEN substr(year, 1, 4)::int END)`;
+    const conditions = [];
 
     for (let i = 0; i < filter_names.length; i++) {
       const filter_param = filter_names[i];
@@ -248,15 +252,27 @@ exports.get_data_byid = async function (req, res) {
         queryPts = queryPts.replace('{min_occ}',
           `HAVING array_length(array_agg(st_astext(geom)), 1) > ${Math.floor(min)}`);
       } else if (filter_param === 'in_fosil') {
-        queryPts = queryPts.replace('{in_fosil}',
-          filter_value ? '' : "AND ejemplarfosil = 'NO'");
+        // GBIF no tiene ejemplarfosil: los fósiles vienen como basisOfRecord.
+        if (!filter_value) conditions.push(`"basisOfRecord" IS DISTINCT FROM 'FOSSIL_SPECIMEN'`);
       } else if (filter_param === 'in_sin_fecha') {
-        queryPts = queryPts.replace('{in_sin_fecha}',
-          filter_value ? '' : 'AND year IS NOT NULL');
+        if (!filter_value) conditions.push(`${ANIO_SQL} IS NOT NULL`);
+      } else if (filter_param === 'fecha_inicio' || filter_param === 'fecha_fin') {
+        // Rango de años; los registros sin fecha los decide in_sin_fecha.
+        if (filter_value === null || filter_value === undefined || filter_value === '') continue;
+        const year = Number(filter_value);
+        if (!Number.isInteger(year) || year < 0 || year > 9998) {
+          return res.status(400).json({ message: `${filter_param} debe ser un año válido` });
+        }
+        const op = filter_param === 'fecha_inicio' ? '>=' : '<=';
+        conditions.push(`(${ANIO_SQL} IS NULL OR ${ANIO_SQL} ${op} ${year})`);
+      } else {
+        return res.status(400).json({ message: `Filtro no válido: ${filter_param}` });
       }
     }
 
-    queryPts = queryPts.replace('{min_occ}', '').replace('{in_fosil}', '').replace('{in_sin_fecha}', '');
+    queryPts = queryPts
+      .replace('{min_occ}', '')
+      .replace('{filters}', conditions.map(c => ` AND ${c}`).join(''));
 
     // Cache: sp_gbif.cells_<resolucion> lo llena dbbuild/precompute_gbif_cells.py
     // y también el write-back de abajo. Solo es seguro sin filtros activos:

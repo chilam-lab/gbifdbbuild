@@ -205,7 +205,6 @@ exports.get_data_byid = async function (req, res) {
 
     const SPID_BATCH     = 10;
     const WAVE_SIZE      = 10;
-    const MAX_PTS_PER_ID = 10000;
 
     const [catRow, gridInfo] = await Promise.all([
       pool.oneOrNone('SELECT id, column_taxon_name FROM cat_taxon WHERE id = $1', [variable_id]),
@@ -312,60 +311,73 @@ exports.get_data_byid = async function (req, res) {
       return res.status(200).json(cachedResponse);
     }
 
+    // Todos los puntos únicos, sin muestreo: el resultado debe coincidir con
+    // el precálculo (sp_gbif.cells_*) porque se guarda en el cache. Una
+    // especie con más de MAX_PTS_PER_QUERY puntos se parte en varias
+    // consultas y sus celdas se unen al final.
+    const MAX_PTS_PER_QUERY = 20000;
+    const species = [];
     const query_array = [];
     for (const row of datapoints) {
       if (!row.points || row.points.length === 0) continue;
+      species.push(row);
 
-      const uniquePts = [...new Set(row.points)];
-      const pts = uniquePts.length > MAX_PTS_PER_ID
-        ? uniquePts.sort(() => Math.random() - 0.5).slice(0, MAX_PTS_PER_ID)
-        : uniquePts;
+      const pts = [...new Set(row.points)];
+      for (let i = 0; i < pts.length; i += MAX_PTS_PER_QUERY) {
+        const query_points = pts.slice(i, i + MAX_PTS_PER_QUERY)
+          .map(wkt => `ST_SetSRID(ST_GeomFromText('${wkt}'), 4326)`)
+          .join(', ');
 
-      const query_points = pts
-        .map(wkt => `ST_SetSRID(ST_GeomFromText('${wkt}'), 4326)`)
-        .join(', ');
+        let query_temp = `
+          WITH puntos AS (
+            SELECT ARRAY[{query_points}] AS geom_array
+          ),
+          point_geom AS (
+            SELECT unnest(geom_array) AS geom FROM puntos
+          )
+          SELECT DISTINCT {res_column} AS cell
+          FROM point_geom p
+          JOIN {table_cell_name} g
+            ON ST_Intersects(g.the_geom, p.geom);
+        `;
 
-      let query_temp = `
-        WITH puntos AS (
-          SELECT ARRAY[{query_points}] AS geom_array
-        ),
-        point_geom AS (
-          SELECT unnest(geom_array) AS geom FROM puntos
-        )
-        SELECT DISTINCT {res_column} AS cell
-        FROM point_geom p
-        JOIN {table_cell_name} g
-          ON ST_Intersects(g.the_geom, p.geom)
-        ORDER BY cell;
-      `;
+        query_temp = query_temp
+          .replace('{query_points}', query_points)
+          .replace('{res_column}', res_column)
+          .replace('{table_cell_name}', table_cell_name);
 
-      query_temp = query_temp
-        .replace('{query_points}', query_points)
-        .replace('{res_column}', res_column)
-        .replace('{table_cell_name}', table_cell_name);
-
-      query_array.push({ query_temp, id_especie: row.id_especie, datos: row.datos });
+        query_array.push({ query_temp, id_especie: row.id_especie });
+      }
     }
 
     const GRID_WAVE = 25; // debe ser <= db_mallas.poolSize (config.js)
-    const results = [];
+    const cellsById = new Map();   // id_especie -> Set de celdas
+    const failedIds = new Set();   // algún trozo falló: resultado incompleto
     for (let i = 0; i < query_array.length; i += GRID_WAVE) {
       const wave = query_array.slice(i, i + GRID_WAVE);
       const waveRows = await Promise.all(
-        wave.map(({ query_temp }) =>
-          pool_mallas.any(query_temp, {}).catch(err => { debug(err); return []; })
+        wave.map(({ query_temp, id_especie }) =>
+          pool_mallas.any(query_temp, {}).catch(err => {
+            debug(err);
+            failedIds.add(id_especie);
+            return [];
+          })
         )
       );
-      results.push(...waveRows);
+      waveRows.forEach((rows, idx) => {
+        const id = wave[idx].id_especie;
+        if (!cellsById.has(id)) cellsById.set(id, new Set());
+        rows.forEach(r => cellsById.get(id).add(r.cell));
+      });
     }
 
-    const response_array = query_array.map((q, idx) => {
-      const cells = (results[idx] || []).map(r => r.cell);
+    const response_array = species.map(row => {
+      const cells = [...(cellsById.get(row.id_especie) || [])].sort((a, b) => a - b);
       return {
         id:       variable_id,
         grid_id,
-        level_id: q.id_especie,
-        metadata: q.datos,
+        level_id: row.id_especie,
+        metadata: row.datos,
         cells,
         n: cells.length,
       };
@@ -373,14 +385,11 @@ exports.get_data_byid = async function (req, res) {
 
     // Write-back: guarda lo calculado en vivo para que la próxima consulta de
     // la misma especie/resolución salga del cache. No bloquea la respuesta.
-    // Solo especies sin muestreo de puntos: con más de MAX_PTS_PER_ID el
-    // resultado vivo es una muestra y no debe quedar como definitivo.
+    // Solo especies cuyas consultas terminaron todas: un resultado incompleto
+    // no debe quedar en cache.
     if (canUseCache) {
-      const sampled = new Set(datapoints
-        .filter(r => r.points && new Set(r.points).size > MAX_PTS_PER_ID)
-        .map(r => r.id_especie));
       Promise.all(response_array
-        .filter(r => !sampled.has(r.level_id))
+        .filter(r => !failedIds.has(r.level_id))
         .map(r => pool.none(
           `UPDATE sp_gbif SET ${cellsColumn} = $<cells>::integer[] WHERE id_especie = $<id>`,
           { cells: r.cells, id: r.level_id }

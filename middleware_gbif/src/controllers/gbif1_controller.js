@@ -195,6 +195,106 @@ exports.get_variable_byid = async function (req, res) {
 };
 
 
+// Año del registro: year es texto ('2020'); NULL = registro sin fecha.
+const GBIF_ANIO_SQL = `(CASE WHEN year ~ '^[0-9]{4}' THEN substr(year, 1, 4)::int END)`;
+
+/**
+ * filter_names/filter_values -> condiciones SQL sobre gbif (sin el AND).
+ * Devuelve { conditions, minOcc, error }; minOcc es null si no se pidió.
+ */
+function gbifFilterConditions(filter_names, filter_values) {
+  const conditions = [];
+  let minOcc = null;
+  for (let i = 0; i < filter_names.length; i++) {
+    const filter_param = filter_names[i];
+    const filter_value = filter_values[i];
+
+    if (filter_param === 'min_occ') {
+      const min = Number(filter_value);
+      if (!Number.isFinite(min) || min < 0) return { error: "min_occ debe ser un número >= 0" };
+      minOcc = Math.floor(min);
+    } else if (filter_param === 'in_fosil') {
+      // GBIF no tiene ejemplarfosil: los fósiles vienen como basisOfRecord.
+      if (!filter_value) conditions.push(`"basisOfRecord" IS DISTINCT FROM 'FOSSIL_SPECIMEN'`);
+    } else if (filter_param === 'in_sin_fecha') {
+      if (!filter_value) conditions.push(`${GBIF_ANIO_SQL} IS NOT NULL`);
+    } else if (filter_param === 'fecha_inicio' || filter_param === 'fecha_fin') {
+      // Rango de años; los registros sin fecha los decide in_sin_fecha.
+      if (filter_value === null || filter_value === undefined || filter_value === '') continue;
+      const year = Number(filter_value);
+      if (!Number.isInteger(year) || year < 0 || year > 9998) return { error: `${filter_param} debe ser un año válido` };
+      const op = filter_param === 'fecha_inicio' ? '>=' : '<=';
+      conditions.push(`(${GBIF_ANIO_SQL} IS NULL OR ${GBIF_ANIO_SQL} ${op} ${year})`);
+    } else {
+      return { error: `Filtro no válido: ${filter_param}` };
+    }
+  }
+  return { conditions, minOcc, error: null };
+}
+
+/**
+ * Registros del target dentro de una celda (popup del mapa de Target):
+ * nombre, año y liga a la ficha en gbif.org. Mismos filtros que get-data.
+ * Body: { grid_id, cell_id, levels_id, filter_names, filter_values, limit }
+ */
+exports.get_cell_occ = async function (req, res) {
+  try {
+    const grid_id = Number(verb_utils.getParam(req, 'grid_id', 0));
+    const cell_id = Number(verb_utils.getParam(req, 'cell_id', NaN));
+    const levels_id_raw = verb_utils.getParam(req, 'levels_id', []);
+    const filter_names = verb_utils.getParam(req, 'filter_names', []);
+    const filter_values = verb_utils.getParam(req, 'filter_values', []);
+    const limit = Math.min(Math.max(Number(verb_utils.getParam(req, 'limit', 500)) || 500, 1), 2000);
+
+    const levels_id = Array.isArray(levels_id_raw)
+      ? levels_id_raw.map(Number).filter(n => Number.isInteger(n) && n > 0)
+      : [];
+    if (!Number.isInteger(grid_id) || grid_id <= 0 || !Number.isFinite(cell_id) || levels_id.length === 0) {
+      return res.status(400).json({ message: 'Se requieren grid_id, cell_id y levels_id' });
+    }
+    if (!Array.isArray(filter_names) || !Array.isArray(filter_values) || filter_names.length !== filter_values.length) {
+      return res.status(400).json({ message: 'filter_names y filter_values deben ser arreglos del mismo tamaño' });
+    }
+    const parsed = gbifFilterConditions(filter_names, filter_values);
+    if (parsed.error) return res.status(400).json({ message: parsed.error });
+
+    const gridInfo = await pool_mallas.oneOrNone(
+      'SELECT resolution, table_cell_name FROM cat_grid WHERE grid_id = $1', [grid_id]
+    );
+    if (!gridInfo) return res.status(404).json({ message: 'No existe la malla solicitada (grid_id)' });
+
+    const cell = await pool_mallas.oneOrNone(
+      `SELECT ST_AsEWKB(the_geom) AS geom FROM ${gridInfo.table_cell_name} WHERE gridid_${gridInfo.resolution} = $1`,
+      [cell_id]
+    );
+    if (!cell) return res.status(404).json({ message: 'No existe la celda en la malla' });
+
+    const rows = await pool.any(
+      `SELECT species AS nombre,
+              ${GBIF_ANIO_SQL} AS anio,
+              NULL::text AS fecha,
+              'https://www.gbif.org/occurrence/' || "gbifID" AS url
+       FROM gbif
+       WHERE id_especie IN ($<ids:csv>)
+         AND geom IS NOT NULL
+         AND ST_Intersects(geom, ST_GeomFromEWKB($<geom>))
+         ${parsed.conditions.map(c => ` AND ${c}`).join('')}
+       ORDER BY nombre, anio DESC NULLS LAST
+       LIMIT $<limit>`,
+      { ids: levels_id, geom: cell.geom, limit: limit + 1 }
+    );
+
+    return res.status(200).json({
+      cell_id,
+      truncated: rows.length > limit,
+      data: rows.slice(0, limit),
+    });
+  } catch (error) {
+    debug(error);
+    return res.status(500).json({ message: 'Error interno al obtener los registros de la celda' });
+  }
+};
+
 exports.get_data_byid = async function (req, res) {
   try {
     const variable_id   = Number(req.params.id);
@@ -239,38 +339,14 @@ exports.get_data_byid = async function (req, res) {
       dic_taxon_group: dic_taxon_group.get(column_taxon),
     };
 
-    // Año del registro: year es texto ('2020'); NULL = registro sin fecha.
-    const ANIO_SQL = `(CASE WHEN year ~ '^[0-9]{4}' THEN substr(year, 1, 4)::int END)`;
-    const conditions = [];
-
-    for (let i = 0; i < filter_names.length; i++) {
-      const filter_param = filter_names[i];
-      const filter_value = filter_values[i];
-
-      if (filter_param === 'min_occ') {
-        const min = Number(filter_value);
-        if (!Number.isFinite(min) || min < 0) {
-          return res.status(400).json({ message: "min_occ debe ser un número >= 0" });
-        }
-        queryPts = queryPts.replace('{min_occ}',
-          `HAVING array_length(array_agg(st_astext(geom)), 1) > ${Math.floor(min)}`);
-      } else if (filter_param === 'in_fosil') {
-        // GBIF no tiene ejemplarfosil: los fósiles vienen como basisOfRecord.
-        if (!filter_value) conditions.push(`"basisOfRecord" IS DISTINCT FROM 'FOSSIL_SPECIMEN'`);
-      } else if (filter_param === 'in_sin_fecha') {
-        if (!filter_value) conditions.push(`${ANIO_SQL} IS NOT NULL`);
-      } else if (filter_param === 'fecha_inicio' || filter_param === 'fecha_fin') {
-        // Rango de años; los registros sin fecha los decide in_sin_fecha.
-        if (filter_value === null || filter_value === undefined || filter_value === '') continue;
-        const year = Number(filter_value);
-        if (!Number.isInteger(year) || year < 0 || year > 9998) {
-          return res.status(400).json({ message: `${filter_param} debe ser un año válido` });
-        }
-        const op = filter_param === 'fecha_inicio' ? '>=' : '<=';
-        conditions.push(`(${ANIO_SQL} IS NULL OR ${ANIO_SQL} ${op} ${year})`);
-      } else {
-        return res.status(400).json({ message: `Filtro no válido: ${filter_param}` });
-      }
+    const parsed = gbifFilterConditions(filter_names, filter_values);
+    if (parsed.error) {
+      return res.status(400).json({ message: parsed.error });
+    }
+    const conditions = parsed.conditions;
+    if (parsed.minOcc !== null) {
+      queryPts = queryPts.replace('{min_occ}',
+        `HAVING array_length(array_agg(st_astext(geom)), 1) > ${parsed.minOcc}`);
     }
 
     queryPts = queryPts

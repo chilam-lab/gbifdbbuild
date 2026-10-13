@@ -19,6 +19,8 @@ import glob
 import psycopg2
 import psycopg2.extras as extras
 import pandas as pd
+import argparse
+import subprocess
 from pathlib import Path
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from dotenv import load_dotenv
@@ -52,6 +54,11 @@ GBIF_COLUMNS = [
 ]
 
 logger = setup_logger()
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--skip-cells', action='store_true',
+                    help='No recalcular sp_gbif.cells_* (preconteos de celdas por especie) al final')
+cli_args = parser.parse_args()
 
 
 def get_conn(autocommit=False):
@@ -223,6 +230,9 @@ try:
     conn = get_conn(autocommit=True)
     cur = conn.cursor()
     cur.execute(get_sql(create_sp_gbif_sql))
+    # Columnas de preconteos (cells_<res>, cells_dirty): deben existir antes
+    # del paso 5, que marca como pendientes las especies con datos nuevos.
+    cur.execute(get_sql(str(BASE_DIR / 'sql' / 'add_sp_gbif_cells_columns.sql')))
     cur.close()
     conn.close()
 
@@ -275,21 +285,36 @@ try:
                     t0.species = t1.species
                 WHERE t0.id_especie IS NULL
                 LIMIT %s
+            ),
+            updated AS (
+                UPDATE gbif t0
+                SET id_especie = t1.id_especie
+                FROM sp_gbif t1, rows_to_update r
+                WHERE t0.ctid = r.ctid AND
+                      t0.kingdom = t1.kingdom AND
+                      t0.phylum  = t1.phylum  AND
+                      t0."class" = t1."class" AND
+                      t0."order" = t1."order" AND
+                      t0.family  = t1.family  AND
+                      t0.genus   = t1.genus   AND
+                      t0.species = t1.species
+                RETURNING t0.id_especie
+            ),
+            -- Especie con ocurrencias nuevas: sus preconteos quedan obsoletos.
+            -- Se vacían (para que el middleware no sirva el cache viejo y la
+            -- fase 1 del precálculo la vuelva a tomar) y se marca pendiente.
+            mark_dirty AS (
+                UPDATE sp_gbif
+                SET cells_dirty = true,
+                    cells_64km = NULL, cells_32km = NULL, cells_16km = NULL, cells_8km = NULL,
+                    cells_ageb = NULL, cells_cue = NULL, cells_mun = NULL, cells_state = NULL
+                WHERE id_especie IN (SELECT DISTINCT id_especie FROM updated)
+                RETURNING 1
             )
-            UPDATE gbif t0
-            SET id_especie = t1.id_especie
-            FROM sp_gbif t1, rows_to_update r
-            WHERE t0.ctid = r.ctid AND
-                  t0.kingdom = t1.kingdom AND
-                  t0.phylum  = t1.phylum  AND
-                  t0."class" = t1."class" AND
-                  t0."order" = t1."order" AND
-                  t0.family  = t1.family  AND
-                  t0.genus   = t1.genus   AND
-                  t0.species = t1.species
+            SELECT count(*) FROM updated
         """, (SPID_BATCH,))
 
-        updated = cur.rowcount
+        updated = cur.fetchone()[0]
         conn.commit()
 
         if updated == 0:
@@ -415,6 +440,31 @@ try:
 except Exception as e:
     logger.error(f'Error actualizando data_source_info: {e}')
     sys.exit(1)
+
+
+# ---------------------------------------------------------------------------
+# Paso 9: Preconteos de celdas por especie (sp_gbif.cells_*)
+# ---------------------------------------------------------------------------
+# El middleware (get-data) los lee en vez de cruzar los puntos con la malla en
+# vivo. Solo se calculan especies cells_dirty: todas en una carga desde cero,
+# y en una actualización solo las que recibieron ocurrencias nuevas (paso 5).
+# --setup vuelve a copiar las mallas locales (grid_<res>_aoi_local) por si
+# cambiaron en meshandregions_db; necesita el FDW del paso 6.
+if cli_args.skip_cells:
+    logger.info('Se omite el precálculo de sp_gbif.cells_* (--skip-cells)')
+elif not all(os.getenv(k) for k in ('DBMESHNAME', 'DBMESHHOST', 'DBMESHPORT', 'DBMESHUSER', 'DBMESHPASSWD')):
+    logger.warning('Variables DBMESH* no configuradas, se omite el precálculo de sp_gbif.cells_*')
+else:
+    try:
+        precompute_script = str(BASE_DIR / 'precompute_gbif_cells.py')
+        logger.info('Preparando precálculo de celdas (columnas y mallas locales)')
+        subprocess.run([sys.executable, precompute_script, '--setup'], check=True)
+        logger.info('Precalculando celdas por especie (sp_gbif.cells_*)')
+        subprocess.run([sys.executable, precompute_script], check=True)
+        logger.info('sp_gbif.cells_* actualizado')
+    except Exception as e:
+        logger.error(f'Error en el precálculo de sp_gbif.cells_*: {e}')
+        sys.exit(1)
 
 
 logger.info('Pipeline GBIF completado exitosamente')

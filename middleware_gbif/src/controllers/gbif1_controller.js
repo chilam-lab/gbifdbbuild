@@ -118,6 +118,7 @@ exports.get_variable_byid = async function (req, res) {
     const q      = verb_utils.getParam(req, 'q', '');
     const offset = Number(verb_utils.getParam(req, 'offset', 0));
     const limit  = Number(verb_utils.getParam(req, 'limit', 10));
+    const match  = verb_utils.getParam(req, 'match', 'exact');
 
     const catRow = await pool.oneOrNone(
       'SELECT id, column_taxon_name FROM cat_taxon WHERE id = $1',
@@ -148,8 +149,9 @@ exports.get_variable_byid = async function (req, res) {
             return `${col} = ${v.trim()}`;
           }
           const safeValue = String(v.trim()).replace(/'/g, "''");
-          if (filter_param === 'especie') {
-            // exacto para no incluir subespecies
+          if (filter_param === 'especie' && match !== 'prefix') {
+            // exacto para no incluir subespecies (análisis); el autocompletado
+            // del selector manda match = 'prefix' para buscar por inicio
             return `lower(${col}) = lower('${safeValue}')`;
           }
           // prefijo para el resto de los niveles (mismo comportamiento que SNIB)

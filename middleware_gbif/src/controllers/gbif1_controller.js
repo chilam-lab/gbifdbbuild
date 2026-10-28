@@ -300,6 +300,105 @@ exports.get_cell_occ = async function (req, res) {
   }
 };
 
+/**
+ * Todos los registros del target (descarga de la versión estable: puntos en
+ * GeoJSON/CSV) con la celda de la malla en que cae cada uno; los que caen
+ * fuera de la malla se omiten. Mismos filtros que get-data.
+ * Body: { grid_id, levels_id, filter_names, filter_values, limit }
+ */
+exports.get_occ = async function (req, res) {
+  try {
+    const grid_id = Number(verb_utils.getParam(req, "grid_id", 0));
+    const levels_id_raw = verb_utils.getParam(req, "levels_id", []);
+    const filter_names = verb_utils.getParam(req, "filter_names", []);
+    const filter_values = verb_utils.getParam(req, "filter_values", []);
+    const limit = Math.min(Math.max(Number(verb_utils.getParam(req, "limit", 100000)) || 100000, 1), 200000);
+
+    const levels_id = Array.isArray(levels_id_raw)
+      ? levels_id_raw.map(Number).filter((n) => Number.isInteger(n) && n > 0)
+      : [];
+    if (!Number.isInteger(grid_id) || grid_id <= 0 || levels_id.length === 0) {
+      return res.status(400).json({ message: "Se requieren grid_id y levels_id" });
+    }
+    if (!Array.isArray(filter_names) || !Array.isArray(filter_values) || filter_names.length !== filter_values.length) {
+      return res.status(400).json({ message: "filter_names y filter_values deben ser arreglos del mismo tamaño" });
+    }
+    const parsed = gbifFilterConditions(filter_names, filter_values);
+    if (parsed.error) return res.status(400).json({ message: parsed.error });
+
+    const gridInfo = await pool_mallas.oneOrNone(
+      "SELECT resolution, table_cell_name FROM cat_grid WHERE grid_id = $1", [grid_id]
+    );
+    if (!gridInfo) return res.status(404).json({ message: "No existe la malla solicitada (grid_id)" });
+
+    // Por lotes de especies, como get-data (listas IN grandes hacen seq-scan).
+    const SPID_BATCH = 10;
+    const rows = [];
+    let truncated = false;
+    for (let i = 0; i < levels_id.length && !truncated; i += SPID_BATCH) {
+      const batch = await pool.any(
+        `SELECT species AS nombre,
+                ${GBIF_ANIO_SQL} AS anio,
+                NULL::text AS fecha,
+                'GBIF'::text AS fuente,
+                NULL::text AS coleccion,
+                "basisOfRecord" AS tipo,
+                ("basisOfRecord" = 'FOSSIL_SPECIMEN') AS fosil,
+                'https://www.gbif.org/occurrence/' || "gbifID" AS url,
+                ST_X(geom) AS longitud,
+                ST_Y(geom) AS latitud
+         FROM gbif
+         WHERE id_especie IN ($<spids:csv>)
+           AND geom IS NOT NULL
+           ${parsed.conditions.map((c) => ` AND ${c}`).join("")}`,
+        { spids: levels_id.slice(i, i + SPID_BATCH) }
+      );
+      for (const r of batch) {
+        if (rows.length >= limit) { truncated = true; break; }
+        rows.push(r);
+      }
+    }
+
+    const cellOf = await cellsForPoints(gridInfo, rows);
+    const data = [];
+    for (const r of rows) {
+      const cell = cellOf.get(`${r.longitud} ${r.latitud}`);
+      if (cell === undefined) continue;
+      r.celda = cell;
+      data.push(r);
+    }
+    data.sort((a, b) => String(a.nombre).localeCompare(String(b.nombre)) || (b.anio ?? -1) - (a.anio ?? -1));
+
+    return res.status(200).json({ truncated, data });
+  } catch (error) {
+    debug(error);
+    return res.status(500).json({ message: "Error interno al obtener los registros" });
+  }
+};
+
+/** "lon lat" -> celda de la malla, para los puntos distintos de rows
+ *  (consultas de hasta 20,000 puntos contra la BD de mallas). */
+async function cellsForPoints(gridInfo, rows) {
+  const pts = [...new Set(rows.map((r) => `${r.longitud} ${r.latitud}`))];
+  const cellOf = new Map();
+  const MAX_PTS_PER_QUERY = 20000;
+  for (let i = 0; i < pts.length; i += MAX_PTS_PER_QUERY) {
+    const chunk = pts.slice(i, i + MAX_PTS_PER_QUERY);
+    const values = chunk
+      .map((p, k) => `(${k}, ST_SetSRID(ST_MakePoint(${p.split(" ").map(Number).join(", ")}), 4326))`)
+      .join(", ");
+    const found = await pool_mallas.any(
+      `WITH puntos(k, geom) AS (VALUES ${values})
+       SELECT DISTINCT ON (p.k) p.k, g.gridid_${gridInfo.resolution} AS cell
+       FROM puntos p
+       JOIN ${gridInfo.table_cell_name} g ON ST_Intersects(g.the_geom, p.geom)
+       ORDER BY p.k, cell`
+    );
+    for (const { k, cell } of found) cellOf.set(chunk[k], Number(cell));
+  }
+  return cellOf;
+}
+
 exports.get_data_byid = async function (req, res) {
   try {
     const variable_id   = Number(req.params.id);

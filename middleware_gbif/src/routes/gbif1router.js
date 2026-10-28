@@ -48,6 +48,9 @@ router.route('/get-data/:id')
 router.route('/get-cell-occ')
   .post(gbifCtrl.get_cell_occ)
 
+router.route('/get-occ')
+  .post(gbifCtrl.get_occ)
+
 router.route('/info')
   .get(gbifCtrl.get_sourceinfo)
   .post(gbifCtrl.get_sourceinfo)
